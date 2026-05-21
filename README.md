@@ -40,4 +40,4 @@ Need help, want to report a bug, or want to hang out with other users? Join our 
 To run the script in your compatible execution environment, copy and paste the loadstring below into your executor:
 
 ```lua
-loadstring(game:HttpGet("https://raw.githubusercontent.com/HydraPhython/Mice/refs/heads/main/Loaders/Mice%20-%20Bake%20Or%20Die"))()
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Flwtherd/Mice/refs/heads/main/bakeordie.lua"))()
