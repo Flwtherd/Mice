@@ -189,7 +189,7 @@ CombatTab:Space()
 
 CombatTab:Slider({
     Flag = "AuraDistanceSlider",
-    Title = "Kill Aura Distance",
+    Title = "Kill Aura",
     Desc = "Adjust the range of your Kill Aura.",
     IsTooltip = true,
     Step = 1,
