@@ -121,26 +121,6 @@ local Window = WindUI:CreateWindow({
 })
 
 -- ============================================================================
--- BETA BACKGROUND CONFIGURATION
--- ============================================================================
-local BetaBackgroundImageID = "rbxassetid://101063969009427" 
-
-pcall(function()
-    if Window.Main and Window.Main:IsA("Frame") then
-        local BackgroundImage = Instance.new("ImageLabel")
-        BackgroundImage.Name = "BetaBackground"
-        BackgroundImage.Size = UDim2.new(1, 0, 1, 0)
-        BackgroundImage.Position = UDim2.new(0, 0, 0, 0)
-        BackgroundImage.Image = BetaBackgroundImageID
-        BackgroundImage.ScaleType = Enum.ScaleType.Crop
-        BackgroundImage.ImageTransparency = 0.85
-        BackgroundImage.ZIndex = 0
-        BackgroundImage.BackgroundTransparency = 1
-        BackgroundImage.Parent = Window.Main
-    end
-end)
-
--- ============================================================================
 -- PERSISTENT POPUP MANAGEMENT
 -- ============================================================================
 local showPopup = true
@@ -267,7 +247,7 @@ CombatTab:Space()
 -- New Station Loops Toggles
 CombatTab:Toggle({
     Flag = "StationGrinderToggle",
-    Title = "Grind Items",
+    Title = "Grid Items",
     Desc = "Repeatedly processes items into the Grinder station deposit slot automatically.",
     Value = false,
     Callback = function(Value)
@@ -335,7 +315,6 @@ ItemsTab:Button({
     end
 })
 
-// ... up to date info ...
 ItemsTab:Space()
 
 ItemsTab:Button({
@@ -1010,4 +989,41 @@ task.spawn(function()
                 character.Humanoid.PlatformStand = true
 
                 if ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0 then
-                    speed = speed + 0
+                    speed = speed + 0.5 + (speed / maxspeed)
+                    if speed > maxspeed then speed = maxspeed end
+                elseif not (ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0) and speed ~= 0 then
+                    speed = speed - 1
+                    if speed < 0 then speed = 0 end
+                end
+
+                if (ctrl.l + ctrl.r) ~= 0 or (ctrl.f + ctrl.b) ~= 0 then
+                    bv.velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (ctrl.f + ctrl.b)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(ctrl.l + ctrl.r, (ctrl.f + ctrl.b) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * speed
+                    lastctrl = {f = ctrl.f, b = ctrl.b, l = ctrl.l, r = ctrl.r}
+                elseif (ctrl.l + ctrl.r) == 0 and (ctrl.f + ctrl.b) == 0 and speed ~= 0 then
+                    bv.velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (lastctrl.f + lastctrl.b)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(lastctrl.l + lastctrl.r, (lastctrl.f + lastctrl.b) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * speed
+                else
+                    bv.velocity = Vector3.new(0, 0, 0)
+                end
+
+                bg.CFrame = workspace.CurrentCamera.CoordinateFrame * CFrame.Angles(-math.rad((ctrl.f + ctrl.b) * 50 * speed / maxspeed), 0, 0)
+            end
+        else
+            if character then
+                local targetTorso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso") or character:FindFirstChild("HumanoidRootPart")
+                if targetTorso then
+                    local bg = targetTorso:FindFirstChild("FlyV3Gyro")
+                    local bv = targetTorso:FindFirstChild("FlyV3Velocity")
+                    if bg then bg:Destroy() end
+                    if bv then bv:Destroy() end
+                end
+            end
+            ctrl = {f = 0, b = 0, l = 0, r = 0}
+            lastctrl = {f = 0, b = 0, l = 0, r = 0}
+            speed = 0
+        end
+    end
+end)
+
+-- Interface Deployment
+Window:SelectTab(PatchTab)
+print(".ftgs hub | WindUI Interface Loaded successfully!")
