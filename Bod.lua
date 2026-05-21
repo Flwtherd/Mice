@@ -33,6 +33,7 @@ end
 
 -- Load Game Remotes
 local ZAP = require(ReplicatedStorage.Client.ClientRemotes)
+local ZapReliable = ReplicatedStorage:WaitForChild("ZAP"):WaitForChild("ZAP_RELIABLE")
 
 -- ESP Setup Variables
 local ESPFolder = Instance.new("Folder")
@@ -51,6 +52,10 @@ local ESPConfig = {
 _G.FlyV3Active = false
 _G.FlyV3Speeds = 1
 local tpwalking = false
+
+-- Automation Toggles
+_G.AutoGrindZombies = false
+_G.AutoGrindItems = false
 
 -- Send Native Integration Notification
 game:GetService("StarterGui"):SetCore("SendNotification", { 
@@ -100,7 +105,7 @@ local Window = WindUI:CreateWindow({
     Size = UDim2.fromOffset(550, 420),
     HideSearchBar = false,
 
-    OpenButton = {
+OpenButton = {
         Title = "Open Bake or Die",
         CornerRadius = UDim.new(1, 0),
         StrokeThickness = 3,
@@ -123,7 +128,7 @@ local Window = WindUI:CreateWindow({
 WindUI:Popup({
     Title = "Update info",
     Icon = "solar:info-square-bold",
-    Content = "Version 1.0 Whats New? | Welcome to new Mice Script.",
+    Content = "Version 1.2 Whats New? | Item Deposit & Zombie Grinding Operational.",
     Buttons = {
         {
             Title = "Close",
@@ -165,6 +170,38 @@ PatchTab:Button({
 })
 
 -- ============================================================================
+-- MAIN: AUTO GRIND TAB
+-- ============================================================================
+local AutoGrindTab = MainSection:Tab({
+    Title = "Auto Grind",
+    Icon = "solar:star-fall-minimalistic-bold",
+    IconColor = Color3.fromHex("#FF007F"),
+    Border = true,
+})
+
+AutoGrindTab:Toggle({
+    Flag = "AutoGrindZombiesToggle",
+    Title = "Auto Grind Zombies",
+    Desc = "Loops attack functions endlessly to clear out all zombies on the map.",
+    Value = false,
+    Callback = function(Value)
+        _G.AutoGrindZombies = Value
+    end
+})
+
+AutoGrindTab:Space()
+
+AutoGrindTab:Toggle({
+    Flag = "AutoGrindItemsToggle",
+    Title = "Auto Deposit Items",
+    Desc = "Endlessly delivers items to both Blueprints Table & Grinder stations.",
+    Value = false,
+    Callback = function(Value)
+        _G.AutoGrindItems = Value
+    end
+})
+
+-- ============================================================================
 -- COMBAT TAB
 -- ============================================================================
 local CombatTab = MainSection:Tab({
@@ -199,18 +236,6 @@ CombatTab:Slider({
     },
     Callback = function(Value)
         _G.AuraDistance = Value
-    end
-})
-
-CombatTab:Space()
-
-CombatTab:Toggle({
-    Flag = "AutoGrindToggle",
-    Title = "Auto Grind Monsters",
-    Desc = "Continuously and automatically wipes out every zombie on the map.",
-    Value = false,
-    Callback = function(Value)
-        _G.AutoGrindEnabled = Value
     end
 })
 
@@ -292,7 +317,6 @@ local TeleportTab = MainSection:Tab({
 
 TeleportTab:Space()
 
--- Vector3 Position Configurations (Replace these coordinates with your actual game choices)
 local dinnerPos     = Vector3.new(-26, 52, 98)
 local furniturePos  = Vector3.new(-204, 52, 14)
 local evergreenPos  = Vector3.new(462, 51, -349)
@@ -315,79 +339,6 @@ TeleportTab:Button({
     end
 })
 
-TeleportTab:Space()
-
-TeleportTab:Button({
-    Title = "Furniture Store",
-    Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
-    Callback = function()
-        local character = Players.LocalPlayer.Character
-        if character and character:FindFirstChild("HumanoidRootPart") then
-            character.HumanoidRootPart.CFrame = CFrame.new(furniturePos)
-            WindUI:Notify({
-                Title = "Teleport Executed",
-                Desc = "Successfully Teleported To Furniture Store!",
-                Icon = "check",
-            })
-        end
-    end
-})
-
-TeleportTab:Space()
-
-TeleportTab:Button({
-    Title = "Evergreen",
-    Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
-    Callback = function()
-        local character = Players.LocalPlayer.Character
-        if character and character:FindFirstChild("HumanoidRootPart") then
-            character.HumanoidRootPart.CFrame = CFrame.new(evergreenPos)
-            WindUI:Notify({
-                Title = "Teleport Executed",
-                Desc = "Successfully Teleported To Evergreen!",
-                Icon = "check",
-            })
-        end
-    end
-})
-
-TeleportTab:Space()
-
-TeleportTab:Button({
-    Title = "Farm",
-    Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
-    Callback = function()
-        local character = Players.LocalPlayer.Character
-        if character and character:FindFirstChild("HumanoidRootPart") then
-            character.HumanoidRootPart.CFrame = CFrame.new(farmPos)
-            WindUI:Notify({
-                Title = "Teleport Executed",
-                Desc = "Successfully Teleported To Farm!",
-                Icon = "check",
-            })
-        end
-    end
-})
-
-TeleportTab:Space()
-
-TeleportTab:Button({
-    Title = "Bank",
-    Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
-    Callback = function()
-        local character = Players.LocalPlayer.Character
-        if character and character:FindFirstChild("HumanoidRootPart") then
-            character.HumanoidRootPart.CFrame = CFrame.new(BankPos)
-            WindUI:Notify({
-                Title = "Teleport Executed",
-                Desc = "Successfully Teleported To Bank!",
-                Icon = "check",
-            })
-        end
-    end
-})
-
-
 -- ============================================================================
 -- PLAYER TAB (WITH INTEGRATED FLY GUI V3 FUNCTIONS)
 -- ============================================================================
@@ -398,7 +349,6 @@ local PlayerTab = MainSection:Tab({
     Border = true,
 })
 
--- Fly GUI V3 Active state management toggle
 PlayerTab:Toggle({
     Flag = "FlyV3Toggle",
     Title = "Fly Engine (V3 Backend)",
@@ -413,7 +363,6 @@ PlayerTab:Toggle({
         local humanoid = character:FindFirstChildOfClass("Humanoid")
         
         if not _G.FlyV3Active then
-            -- Reset state back to default
             for _, state in ipairs(Enum.HumanoidStateType:GetEnumItems()) do
                 pcall(function() humanoid:SetStateEnabled(state, true) end)
             end
@@ -421,7 +370,6 @@ PlayerTab:Toggle({
             if character:FindFirstChild("Animate") then character.Animate.Disabled = false end
             tpwalking = false
         else
-            -- Enable fly state adjustments
             StartTpWalk()
             if character:FindFirstChild("Animate") then character.Animate.Disabled = true end
             
@@ -439,7 +387,6 @@ PlayerTab:Toggle({
 
 PlayerTab:Space()
 
--- Speed value modifications 
 PlayerTab:Slider({
     Flag = "FlyV3SpeedSlider",
     Title = "Fly Speed Multiplier",
@@ -455,31 +402,6 @@ PlayerTab:Slider({
         _G.FlyV3Speeds = Value
         if _G.FlyV3Active then
             StartTpWalk()
-        end
-    end
-})
-
-PlayerTab:Space()
-
--- Vertical axis shifts
-PlayerTab:Button({
-    Title = "Ascend Character (UP)",
-    Desc = "Shifts your character coordinates upward natively.",
-    Callback = function()
-        local character = Players.LocalPlayer.Character
-        if character and character:FindFirstChild("HumanoidRootPart") then
-            character.HumanoidRootPart.CFrame = character.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
-        end
-    end
-})
-
-PlayerTab:Button({
-    Title = "Descend Character (DOWN)",
-    Desc = "Shifts your character coordinates downward natively.",
-    Callback = function()
-        local character = Players.LocalPlayer.Character
-        if character and character:FindFirstChild("HumanoidRootPart") then
-            character.HumanoidRootPart.CFrame = character.HumanoidRootPart.CFrame * CFrame.new(0, -5, 0)
         end
     end
 })
@@ -502,28 +424,6 @@ PlayerTab:Slider({
         local character = Players.LocalPlayer.Character
         if character and character:FindFirstChild("Humanoid") then
             character.Humanoid.WalkSpeed = Value
-        end
-    end
-})
-
-PlayerTab:Space()
-
-PlayerTab:Slider({
-    Flag = "JumpPowerSlider",
-    Title = "JumpPower",
-    Desc = "Modify your maximum jump height.",
-    IsTooltip = true,
-    Step = 1,
-    Value = {
-        Min = 50,
-        Max = 200,
-        Default = 50,
-    },
-    Callback = function(Value)
-        _G.JumpPower = Value
-        local character = Players.LocalPlayer.Character
-        if character and character:FindFirstChild("Humanoid") then
-            character.Humanoid.JumpPower = Value
         end
     end
 })
@@ -564,61 +464,8 @@ ESPTab:Toggle({
     end
 })
 
-ESPTab:Space()
-
-ESPTab:Toggle({
-    Flag = "ItemESPToggle",
-    Title = "Item ESP",
-    Desc = "Highlights interactable bodies and items.",
-    Value = false,
-    Callback = function(Value)
-        ESPConfig.ItemESP = Value
-        UpdateESP()
-    end
-})
-
-ESPTab:Space()
-
-ESPTab:Toggle({
-    Flag = "ESPNamesToggle",
-    Title = "Show Names",
-    Desc = "Displays object or entity names.",
-    Value = true,
-    Callback = function(Value)
-        ESPConfig.ShowNames = Value
-        UpdateESP()
-    end
-})
-
-ESPTab:Space()
-
-ESPTab:Toggle({
-    Flag = "ESPDistanceToggle",
-    Title = "Show Distance",
-    Desc = "Displays distance measurements in studs.",
-    Value = true,
-    Callback = function(Value)
-        ESPConfig.ShowDistance = Value
-        UpdateESP()
-    end
-})
-
-ESPTab:Space()
-
-ESPTab:Toggle({
-    Flag = "ESPHighlightToggle",
-    Title = "Show Highlight",
-    Desc = "Renders an outline/fill mesh highlight through walls.",
-    Value = true,
-    Callback = function(Value)
-        ESPConfig.ShowHighlight = Value
-        UpdateESP()
-    end
-})
-
 function CreateESP(part, color, name, distance)
     local espGroup = {}
-    
     if ESPConfig.ShowNames or ESPConfig.ShowDistance then
         local billboard = Instance.new("BillboardGui")
         billboard.Name = name .. "_Billboard"
@@ -647,7 +494,6 @@ function CreateESP(part, color, name, distance)
         textLabel.TextStrokeTransparency = 0
         textLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
         textLabel.Parent = billboard
-        
         table.insert(espGroup, billboard)
     end
     
@@ -663,7 +509,6 @@ function CreateESP(part, color, name, distance)
         highlight.Parent = ESPFolder
         table.insert(espGroup, highlight)
     end
-    
     return espGroup
 end
 
@@ -675,7 +520,6 @@ end
 
 UpdateESP = function()
     ClearESP()
-    
     local character = Players.LocalPlayer.Character
     if not character or not character:FindFirstChild("HumanoidRootPart") then return end
     local playerRoot = character.HumanoidRootPart
@@ -691,31 +535,13 @@ UpdateESP = function()
             end
         end
     end
-    
-    if ESPConfig.ItemESP then
-        for _, item in pairs(workspace.Interactables:GetChildren()) do
-            if item:IsA("Model") then
-                local isBody = item:FindFirstChild("HumanoidRootPart")
-                local isItem = not item:FindFirstChild("ProductPriceTag")
-                
-                if isBody or isItem then
-                    local targetPart = item:FindFirstChild("HumanoidRootPart") or item.PrimaryPart
-                    if targetPart then
-                        local distance = (playerRoot.Position - targetPart.Position).Magnitude
-                        local espName = isBody and "Body: " .. item.Name or "Item: " .. item.Name
-                        local espColor = isBody and Color3.fromRGB(255, 165, 0) or Color3.fromRGB(50, 255, 50)
-                        CreateESP(targetPart, espColor, espName, distance)
-                    end
-                end
-            end
-        end
-    end
 end
+
 -- ============================================================================
 -- CONFIGURATION MANAGER PANEL
 -- ============================================================================
 if not RunService:IsStudio() and writefile and printidentity() then
-    local ConfigTab = VisSection:Tab({
+    local ConfigTab = MainSection:Tab({ 
         Title = "Config Center",
         Icon = "solar:folder-with-files-bold",
         IconColor = Color3.fromHex("#7775F2"),
@@ -732,68 +558,52 @@ if not RunService:IsStudio() and writefile and printidentity() then
             ConfigName = value
         end
     })
-
-    ConfigTab:Space()
-
-    local AllConfigs = ConfigManager:AllConfigs()
-    local DefaultValue = table.find(AllConfigs, ConfigName) and ConfigName or nil
-
-    local AllConfigsDropdown = ConfigTab:Dropdown({
-        Title = "Saved Presets",
-        Desc = "Choose an existing configuration payload",
-        Values = AllConfigs,
-        Value = DefaultValue,
-        Callback = function(value)
-            ConfigName = value
-            ConfigNameInput:Set(value)
-        end,
-    })
-
-    ConfigTab:Space()
-
-    ConfigTab:Button({
-        Title = "Save Preset",
-        Justify = "Center",
-        Callback = function()
-            Window.CurrentConfig = ConfigManager:Config(ConfigName)
-            if Window.CurrentConfig:Save() then
-                WindUI:Notify({
-                    Title = "Config Saved",
-                    Desc = "Config '" .. ConfigName .. "' successfully processed.",
-                    Icon = "check",
-                })
-            end
-            AllConfigsDropdown:Refresh(ConfigManager:AllConfigs())
-        end,
-    })
-
-    ConfigTab:Space()
-
-    ConfigTab:Button({
-        Title = "Load Preset",
-        Justify = "Center",
-        Callback = function()
-            Window.CurrentConfig = ConfigManager:CreateConfig(ConfigName)
-            if Window.CurrentConfig:Load() then
-                WindUI:Notify({
-                    Title = "Config Operational",
-                    Desc = "Loaded '" .. ConfigName .. "' settings.",
-                    Icon = "refresh-cw",
-                })
-            end
-        end,
-    })
 end
 
 -- ============================================================================
 -- BACKGROUND EXECUTION LOOPS
 -- ============================================================================
 
--- Thread 1: Infinite Automated Grid Engine
+-- Unified Item Deposit Process Loop
+task.spawn(function()
+    while true do
+        task.wait(0.4) -- Rate-limited slightly to safeguard from server packet kicks
+        if _G.AutoGrindItems then
+            pcall(function()
+                local stations = workspace:FindFirstChild("Stations")
+                if stations then
+                    -- 1. Fire Blueprints Table Deposit
+                    local blueprintsTable = stations:FindFirstChild("BlueprintsTable")
+                    local blueprintDeposit = blueprintsTable and blueprintsTable:FindFirstChild("ObjectDeposit")
+                    if blueprintDeposit then
+                        local blueprintArgs = {
+                            buffer.fromstring("\027\001"),
+                            { blueprintDeposit }
+                        }
+                        ZapReliable:FireServer(unpack(blueprintArgs))
+                    end
+                    
+                    -- 2. Fire Grinder Deposit
+                    local grinderStation = stations:FindFirstChild("Grinder")
+                    local grinderDeposit = grinderStation and grinderStation:FindFirstChild("ObjectDeposit")
+                    if grinderDeposit then
+                        local grinderArgs = {
+                            buffer.fromstring("\027\001"),
+                            { grinderDeposit }
+                        }
+                        ZapReliable:FireServer(unpack(grinderArgs))
+                    end
+                end
+            end)
+        end
+    end
+end)
+
+-- Auto Grind Zombies Loop
 task.spawn(function()
     while true do
         task.wait(0.2)
-        if _G.AutoGrindEnabled then
+        if _G.AutoGrindZombies then
             local character = Players.LocalPlayer.Character
             if character and character:FindFirstChild("HumanoidRootPart") then
                 local slot = _G.WeaponSlot or 2
@@ -817,11 +627,11 @@ task.spawn(function()
     end
 end)
 
--- Thread 2: Kill Aura Proximity Sweeper
+-- Kill Aura Proximity Sweeper
 task.spawn(function()
     while true do
         task.wait(0.05)
-        if _G.KillAuraEnabled and not _G.AutoGrindEnabled then
+        if _G.KillAuraEnabled and not _G.AutoGrindZombies then
             local character = Players.LocalPlayer.Character
             if character and character:FindFirstChild("HumanoidRootPart") then
                 local root = character.HumanoidRootPart
@@ -846,27 +656,22 @@ task.spawn(function()
     end
 end)
 
--- Thread 3: Stat State Forcer
+-- Stat State Forcer
 task.spawn(function()
     while true do
         task.wait(1)
         local character = Players.LocalPlayer.Character
         if character and character:FindFirstChild("Humanoid") then
-            if _G.WalkSpeed then
-                character.Humanoid.WalkSpeed = _G.WalkSpeed
-            end
-            if _G.JumpPower then
-                character.Humanoid.JumpPower = _G.JumpPower
-            end
+            if _G.WalkSpeed then character.Humanoid.WalkSpeed = _G.WalkSpeed end
         end
     end
 end)
 
--- Thread 4: Visual Refresh Controller
+-- Visual Refresh Controller
 task.spawn(function()
     while true do
         task.wait(0.5)
-        if ESPConfig.MonsterESP or ESPConfig.ItemESP then
+        if ESPConfig.MonsterESP then
             UpdateESP()
         else
             ClearESP()
@@ -874,7 +679,7 @@ task.spawn(function()
     end
 end)
 
--- Thread 5: Fly GUI V3 Control Vector Processing Loop
+-- Fly GUI V3 Control Vector Processing Loop
 task.spawn(function()
     local ctrl = {f = 0, b = 0, l = 0, r = 0}
     local lastctrl = {f = 0, b = 0, l = 0, r = 0}
@@ -905,7 +710,6 @@ task.spawn(function()
         local character = Players.LocalPlayer.Character
         
         if _G.FlyV3Active and character and character:FindFirstChildOfClass("Humanoid") and character.Humanoid.Health > 0 then
-            -- Safely identify the correct torso / alignment part regardless of R6 or R15 rig
             local targetTorso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso") or character:FindFirstChild("HumanoidRootPart")
             
             if targetTorso then
@@ -948,7 +752,6 @@ task.spawn(function()
                 bg.CFrame = workspace.CurrentCamera.CoordinateFrame * CFrame.Angles(-math.rad((ctrl.f + ctrl.b) * 50 * speed / maxspeed), 0, 0)
             end
         else
-            -- Cleanup loops smoothly if fly state drops or player dies
             if character then
                 local targetTorso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso") or character:FindFirstChild("HumanoidRootPart")
                 if targetTorso then
