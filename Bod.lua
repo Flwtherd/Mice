@@ -123,7 +123,7 @@ local Window = WindUI:CreateWindow({
 WindUI:Popup({
     Title = "Update info",
     Icon = "solar:info-square-bold",
-    Content = "Version 1.2 successfully injected. FLY GUI V3 engine fully embedded.",
+    Content = "Version 1.0 Whats New? | Welcome to new Mice Script.",
     Buttons = {
         {
             Title = "Close",
