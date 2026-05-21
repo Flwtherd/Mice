@@ -1,7 +1,8 @@
 local RunService = game:GetService("RunService")
 
 --[[
-    WindUI - Mice: Bake or Die Hub [Version 1.1 BETA]
+    WindUI - Mice: Bake or Die Hub [Version 1.0 BETA]
+    Created May 2026 - Giraffiecy and Phoenix
 ]]
 
 -- Environment Safety Setup
@@ -93,7 +94,7 @@ end
 -- */ Window Initialization /* --
 local Window = WindUI:CreateWindow({
     Title = "Mice  |  Bake or Die [BETA]",
-    Subtitle = "Version 1.1",
+    Subtitle = "Version 1.0",
     Folder = "BakeOrDieHub",
     Icon = "solar:folder-2-bold-duotone",
     NewElements = true,
@@ -115,7 +116,7 @@ local Window = WindUI:CreateWindow({
     },
     Topbar = {
         Height = 44,
-        ButtonsType = "Mac",
+        ButtonsType = "Default",
     },
 })
 
@@ -179,15 +180,14 @@ end
 
 -- Version Tag
 Window:Tag({
-    Title = "v1.1 Beta",
+    Title = "v1.0 Beta",
     Icon = "github",
     Color = Color3.fromHex("#1c1c1c"),
     Border = true,
 })
 
 -- */ Section Assignments /* --
-local MainSection = Window:Section({ Title = "Main Framework" })
-local VisSection = Window:Section({ Title = "Visuals & Data" })
+local MainSection = Window:Section({ Title = "Main" })
 
 -- ============================================================================
 -- 1. PATCH NOTES TAB
@@ -224,7 +224,7 @@ CombatTab:Space()
 
 CombatTab:Toggle({
     Flag = "KillAuraToggle",
-    Title = "yes Aura kill",
+    Title = "Aura kill",
     Desc = "Automatically attacks nearby monsters.",
     Value = false,
     Callback = function(Value)
@@ -236,7 +236,7 @@ CombatTab:Space()
 
 CombatTab:Slider({
     Flag = "AuraDistanceSlider",
-    Title = "Kill Aura Distance",
+    Title = "Kill Aura",
     Desc = "Adjust the range of your Kill Aura.",
     IsTooltip = true,
     Step = 1,
@@ -254,7 +254,7 @@ CombatTab:Space()
 
 CombatTab:Toggle({
     Flag = "AutoGrindToggle",
-    Title = "Auto Grind Monsters",
+    Title = "Auto Kill all [BETA]",
     Desc = "Continuously and automatically wipes out every zombie on the map.",
     Value = false,
     Callback = function(Value)
@@ -267,7 +267,7 @@ CombatTab:Space()
 -- New Station Loops Toggles
 CombatTab:Toggle({
     Flag = "StationGrinderToggle",
-    Title = "yes Auto Machine Grind",
+    Title = "Grind Items",
     Desc = "Repeatedly processes items into the Grinder station deposit slot automatically.",
     Value = false,
     Callback = function(Value)
@@ -279,7 +279,7 @@ CombatTab:Space()
 
 CombatTab:Toggle({
     Flag = "StationBlueprintToggle",
-    Title = "yes Auto Blueprint Deposit",
+    Title = "Grind Zombies",
     Desc = "Repeatedly processes items into the Blueprints Table deposit slot automatically.",
     Value = false,
     Callback = function(Value)
@@ -300,7 +300,7 @@ CombatTab:Button({
                     ZAP.meleeAttack.fire({
                         monsters = {monster},
                         civilians = {},
-                        activeSlot = _G.WeaponSlot or 2
+                        activeSlot = _G.WeaponSlot
                     })
                     task.wait(0.1)
                 end
@@ -320,7 +320,7 @@ local ItemsTab = MainSection:Tab({
 })
 
 ItemsTab:Button({
-    Title = "Bring Bodies",
+    Title = "Bring Bodies [Zombies]",
     Desc = "Teleports all interactable bodies to your position.",
     Callback = function()
         local character = Players.LocalPlayer.Character
@@ -335,6 +335,7 @@ ItemsTab:Button({
     end
 })
 
+// ... up to date info ...
 ItemsTab:Space()
 
 ItemsTab:Button({
@@ -357,7 +358,7 @@ ItemsTab:Button({
 -- 4. PLAYER TAB (WITH INTEGRATED FLY GUI V3 FUNCTIONS)
 -- ============================================================================
 local PlayerTab = MainSection:Tab({
-    Title = "Player Settings",
+    Title = "Player",
     Icon = "solar:password-minimalistic-input-bold",
     IconColor = Color3.fromHex("#7775F2"),
     Border = true,
@@ -511,40 +512,10 @@ local TeleportTab = MainSection:Tab({
     Border = true,
 })
 
-local TargetX, TargetY, TargetZ = 0, 0, 0
-
-TeleportTab:Input({
-    Title = "Coordinate X",
-    Icon = "file-cog",
-    Callback = function(value)
-        TargetX = tonumber(value) or 0
-    end
-})
-
-TeleportTab:Space()
-
-TeleportTab:Input({
-    Title = "Coordinate Y",
-    Icon = "file-cog",
-    Callback = function(value)
-        TargetY = tonumber(value) or 0
-    end
-})
-
-TeleportTab:Space()
-
-TeleportTab:Input({
-    Title = "Coordinate Z",
-    Icon = "file-cog",
-    Callback = function(value)
-        TargetZ = tonumber(value) or 0
-    end
-})
-
 TeleportTab:Space()
 
 TeleportTab:Button({
-    Title = "Teleport to Coordinates",
+    Title = "Dinner [Base]",
     Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
     Callback = function()
         local character = Players.LocalPlayer.Character
@@ -552,7 +523,55 @@ TeleportTab:Button({
             character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(TargetX, TargetY, TargetZ))
             WindUI:Notify({
                 Title = "Teleport Executed",
-                Desc = "Successfully warped to coordinates: " .. TargetX .. ", " .. TargetY .. ", " .. TargetZ,
+                Desc = "Successfully Teleported To Dinner [Base]!",
+                Icon = "check",
+            })
+        end
+    end
+})
+
+TeleportTab:Button({
+    Title = "Furniture Store",
+    Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
+    Callback = function()
+        local character = Players.LocalPlayer.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(TargetX, TargetY, TargetZ))
+            WindUI:Notify({
+                Title = "Teleport Executed",
+                Desc = "Successfully Teleported To Furniture Store!",
+                Icon = "check",
+            })
+        end
+    end
+})
+
+TeleportTab:Button({
+    Title = "Evergreen",
+    Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
+    Callback = function()
+        local character = Players.LocalPlayer.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(TargetX, TargetY, TargetZ))
+            WindUI:Notify({
+                Title = "Teleport Executed",
+                Desc = "Successfully Teleported To Evergreen!",
+                Icon = "check",
+            })
+        end
+    end
+})
+
+TeleportTab:Button({
+    Title = "Farm",
+    Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
+    Callback = function()
+        local character = Players.LocalPlayer.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(TargetX, TargetY, TargetZ))
+            WindUI:Notify({
+                Title = "Teleport Executed",
+                Desc = "Successfully Teleported To Farm!",
                 Icon = "check",
             })
         end
@@ -562,8 +581,8 @@ TeleportTab:Button({
 -- ============================================================================
 -- ESP TAB & FUNCTIONS
 -- ============================================================================
-local ESPTab = VisSection:Tab({
-    Title = "ESP Engine",
+local ESPTab = MainSection:Tab({
+    Title = "ESP",
     Icon = "solar:check-square-bold",
     IconColor = Color3.fromHex("#10C550"),
     Border = true,
@@ -734,7 +753,7 @@ end
 -- CONFIGURATION MANAGER PANEL
 -- ============================================================================
 if not RunService:IsStudio() and writefile and printidentity() then
-    local ConfigTab = VisSection:Tab({
+    local ConfigTab = MainSection:Tab({
         Title = "Config Center",
         Icon = "solar:folder-with-files-bold",
         IconColor = Color3.fromHex("#7775F2"),
@@ -815,7 +834,7 @@ task.spawn(function()
         if _G.AutoGrindEnabled then
             local character = Players.LocalPlayer.Character
             if character and character:FindFirstChild("HumanoidRootPart") then
-                local slot = _G.WeaponSlot or 2
+                local slot = _G.WeaponSlot
                 local targets = {}
                 
                 for _, monster in pairs(workspace.Monsters:GetChildren()) do
@@ -844,7 +863,7 @@ task.spawn(function()
             local character = Players.LocalPlayer.Character
             if character and character:FindFirstChild("HumanoidRootPart") then
                 local root = character.HumanoidRootPart
-                local slot = _G.WeaponSlot or 2
+                local slot = _G.WeaponSlot 
                 local distance = _G.AuraDistance or 25
                 
                 for _, monster in pairs(workspace.Monsters:GetChildren()) do
@@ -991,41 +1010,4 @@ task.spawn(function()
                 character.Humanoid.PlatformStand = true
 
                 if ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0 then
-                    speed = speed + 0.5 + (speed / maxspeed)
-                    if speed > maxspeed then speed = maxspeed end
-                elseif not (ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0) and speed ~= 0 then
-                    speed = speed - 1
-                    if speed < 0 then speed = 0 end
-                end
-
-                if (ctrl.l + ctrl.r) ~= 0 or (ctrl.f + ctrl.b) ~= 0 then
-                    bv.velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (ctrl.f + ctrl.b)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(ctrl.l + ctrl.r, (ctrl.f + ctrl.b) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * speed
-                    lastctrl = {f = ctrl.f, b = ctrl.b, l = ctrl.l, r = ctrl.r}
-                elseif (ctrl.l + ctrl.r) == 0 and (ctrl.f + ctrl.b) == 0 and speed ~= 0 then
-                    bv.velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (lastctrl.f + lastctrl.b)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(lastctrl.l + lastctrl.r, (lastctrl.f + lastctrl.b) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * speed
-                else
-                    bv.velocity = Vector3.new(0, 0, 0)
-                end
-
-                bg.CFrame = workspace.CurrentCamera.CoordinateFrame * CFrame.Angles(-math.rad((ctrl.f + ctrl.b) * 50 * speed / maxspeed), 0, 0)
-            end
-        else
-            if character then
-                local targetTorso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso") or character:FindFirstChild("HumanoidRootPart")
-                if targetTorso then
-                    local bg = targetTorso:FindFirstChild("FlyV3Gyro")
-                    local bv = targetTorso:FindFirstChild("FlyV3Velocity")
-                    if bg then bg:Destroy() end
-                    if bv then bv:Destroy() end
-                end
-            end
-            ctrl = {f = 0, b = 0, l = 0, r = 0}
-            lastctrl = {f = 0, b = 0, l = 0, r = 0}
-            speed = 0
-        end
-    end
-end)
-
--- Interface Deployment
-Window:SelectTab(PatchTab)
-print(".ftgs hub | WindUI Interface Loaded successfully!")
+                    speed = speed + 0
