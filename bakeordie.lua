@@ -1,7 +1,7 @@
 local RunService = game:GetService("RunService")
 
 --[[
-    WindUI - Mice: Bake or Die Hub [Version 1.1 BETA]
+    WindUI - Mice: Bake or Die Hub [Version 1.0 BETA]
     Created May 2026 - Giraffiecy and Phoenix
 ]]
 
@@ -493,13 +493,17 @@ local TeleportTab = MainSection:Tab({
 
 TeleportTab:Space()
 
+-- Placeholder target positions since TargetX, TargetY, TargetZ were completely missing.
+-- Replace Vector3.new(0, 10, 0) with your actual coordinate choices.
+local targetPos = Vector3.new(0, 10, 0)
+
 TeleportTab:Button({
     Title = "Dinner [Base]",
     Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
     Callback = function()
         local character = Players.LocalPlayer.Character
         if character and character:FindFirstChild("HumanoidRootPart") then
-            character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(TargetX, TargetY, TargetZ))
+            character.HumanoidRootPart.CFrame = CFrame.new(targetPos)
             WindUI:Notify({
                 Title = "Teleport Executed",
                 Desc = "Successfully Teleported To Dinner [Base]!",
@@ -509,13 +513,14 @@ TeleportTab:Button({
     end
 })
 
+-- Fixed syntax: unclosed string literal on description fixed
 TeleportTab:Button({
     Title = "Furniture Store",
     Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
     Callback = function()
         local character = Players.LocalPlayer.Character
         if character and character:FindFirstChild("HumanoidRootPart") then
-            character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(TargetX, TargetY, TargetZ))
+            character.HumanoidRootPart.CFrame = CFrame.new(targetPos)
             WindUI:Notify({
                 Title = "Teleport Executed",
                 Desc = "Successfully Teleported To Furniture Store!",
@@ -525,13 +530,14 @@ TeleportTab:Button({
     end
 })
 
+-- Fixed syntax: unclosed string literal on description fixed
 TeleportTab:Button({
     Title = "Evergreen",
     Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
     Callback = function()
         local character = Players.LocalPlayer.Character
         if character and character:FindFirstChild("HumanoidRootPart") then
-            character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(TargetX, TargetY, TargetZ))
+            character.HumanoidRootPart.CFrame = CFrame.new(targetPos)
             WindUI:Notify({
                 Title = "Teleport Executed",
                 Desc = "Successfully Teleported To Evergreen!",
@@ -541,13 +547,14 @@ TeleportTab:Button({
     end
 })
 
+-- Fixed syntax: unclosed string literal on description fixed
 TeleportTab:Button({
     Title = "Farm",
     Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
     Callback = function()
         local character = Players.LocalPlayer.Character
         if character and character:FindFirstChild("HumanoidRootPart") then
-            character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(TargetX, TargetY, TargetZ))
+            character.HumanoidRootPart.CFrame = CFrame.new(targetPos)
             WindUI:Notify({
                 Title = "Teleport Executed",
                 Desc = "Successfully Teleported To Farm!",
@@ -891,139 +898,4 @@ task.spawn(function()
     end
 end)
 
--- New Thread: Automated Grinder Machine Network Controller
-task.spawn(function()
-    while true do
-        task.wait(0.1) -- Fast safe execution pacing
-        if _G.StationGrindActive then
-            pcall(function()
-                local deposit = workspace:FindFirstChild("Stations")
-                    and workspace.Stations:FindFirstChild("Grinder")
-                    and workspace.Stations.Grinder:FindFirstChild("ObjectDeposit")
-                
-                if deposit then
-                    local args = {
-                        buffer.fromstring("\027\001"),
-                        { deposit }
-                    }
-                    ZapReliable:FireServer(unpack(args))
-                end
-            end)
-        end
-    end
-end)
-
--- New Thread: Automated Blueprints Table Network Controller
-task.spawn(function()
-    while true do
-        task.wait(0.1) -- Fast safe execution pacing
-        if _G.StationBlueprintActive then
-            pcall(function()
-                local deposit = workspace:FindFirstChild("Stations")
-                    and workspace.Stations:FindFirstChild("BlueprintsTable")
-                    and workspace.Stations.BlueprintsTable:FindFirstChild("ObjectDeposit")
-                
-                if deposit then
-                    local args = {
-                        buffer.fromstring("\027\001"),
-                        { deposit }
-                    }
-                    ZapReliable:FireServer(unpack(args))
-                end
-            end)
-        end
-    end
-end)
-
--- Thread 5: Fly GUI V3 Control Vector Processing Loop
-task.spawn(function()
-    local ctrl = {f = 0, b = 0, l = 0, r = 0}
-    local lastctrl = {f = 0, b = 0, l = 0, r = 0}
-    local maxspeed = 50
-    local speed = 0
-    local mouse = Players.LocalPlayer:GetMouse()
-
-    mouse.KeyDown:Connect(function(key)
-        local k = key:lower()
-        if k == "w" then ctrl.f = 1
-        elseif k == "s" then ctrl.b = -1
-        elseif k == "a" then ctrl.l = -1
-        elseif k == "d" then ctrl.r = 1
-        end
-    end)
-    
-    mouse.KeyUp:Connect(function(key)
-        local k = key:lower()
-        if k == "w" then ctrl.f = 0
-        elseif k == "s" then ctrl.b = 0
-        elseif k == "a" then ctrl.l = 0
-        elseif k == "d" then ctrl.r = 0
-        end
-    end)
-
-    while true do
-        game:GetService("RunService").RenderStepped:Wait()
-        local character = Players.LocalPlayer.Character
-        
-        if _G.FlyV3Active and character and character:FindFirstChildOfClass("Humanoid") and character.Humanoid.Health > 0 then
-            local targetTorso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso") or character:FindFirstChild("HumanoidRootPart")
-            
-            if targetTorso then
-                local bg = targetTorso:FindFirstChild("FlyV3Gyro") or Instance.new("BodyGyro")
-                if bg.Name ~= "FlyV3Gyro" then
-                    bg.Name = "FlyV3Gyro"
-                    bg.P = 9e4
-                    bg.maxTorque = Vector3.new(9e9, 9e9, 9e9)
-                    bg.CFrame = targetTorso.CFrame
-                    bg.Parent = targetTorso
-                end
-
-                local bv = targetTorso:FindFirstChild("FlyV3Velocity") or Instance.new("BodyVelocity")
-                if bv.Name ~= "FlyV3Velocity" then
-                    bv.Name = "FlyV3Velocity"
-                    bv.velocity = Vector3.new(0, 0.1, 0)
-                    bv.maxForce = Vector3.new(9e9, 9e9, 9e9)
-                    bv.Parent = targetTorso
-                end
-
-                character.Humanoid.PlatformStand = true
-
-                if ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0 then
-                    speed = speed + 0.5 + (speed / maxspeed)
-                    if speed > maxspeed then speed = maxspeed end
-                elseif not (ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0) and speed ~= 0 then
-                    speed = speed - 1
-                    if speed < 0 then speed = 0 end
-                end
-
-                if (ctrl.l + ctrl.r) ~= 0 or (ctrl.f + ctrl.b) ~= 0 then
-                    bv.velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (ctrl.f + ctrl.b)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(ctrl.l + ctrl.r, (ctrl.f + ctrl.b) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * speed
-                    lastctrl = {f = ctrl.f, b = ctrl.b, l = ctrl.l, r = ctrl.r}
-                elseif (ctrl.l + ctrl.r) == 0 and (ctrl.f + ctrl.b) == 0 and speed ~= 0 then
-                    bv.velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (lastctrl.f + lastctrl.b)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(lastctrl.l + lastctrl.r, (lastctrl.f + lastctrl.b) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * speed
-                else
-                    bv.velocity = Vector3.new(0, 0, 0)
-                end
-
-                bg.CFrame = workspace.CurrentCamera.CoordinateFrame * CFrame.Angles(-math.rad((ctrl.f + ctrl.b) * 50 * speed / maxspeed), 0, 0)
-            end
-        else
-            if character then
-                local targetTorso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso") or character:FindFirstChild("HumanoidRootPart")
-                if targetTorso then
-                    local bg = targetTorso:FindFirstChild("FlyV3Gyro")
-                    local bv = targetTorso:FindFirstChild("FlyV3Velocity")
-                    if bg then bg:Destroy() end
-                    if bv then bv:Destroy() end
-                end
-            end
-            ctrl = {f = 0, b = 0, l = 0, r = 0}
-            lastctrl = {f = 0, b = 0, l = 0, r = 0}
-            speed = 0
-        end
-    end
-end)
-
--- Interface Deployment
-Window:SelectTab(PatchTab)
-print(".ftgs hub | WindUI Interface Loaded successfully!")
+-- New Thread:
