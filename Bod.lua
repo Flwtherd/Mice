@@ -297,7 +297,7 @@ TeleportTab:Space()
 local dinnerPos     = Vector3.new(-26, 52, 98)
 local furniturePos  = Vector3.new(-204, 52, 14)
 local evergreenPos  = Vector3.new(462, 51, -349)
-local farmPos       = Vector3.new(-167, 55, -394)
+local farmPos       = Vector3.new(-167, 55, 394)
 local BankPos       = Vector3.new(999, 54, -127)
 
 TeleportTab:Button({
