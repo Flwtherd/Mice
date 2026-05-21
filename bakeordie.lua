@@ -1,7 +1,7 @@
 local RunService = game:GetService("RunService")
 
 --[[
-    WindUI - Mice: Bake or Die Hub [Version 1.0 BETA]
+    WindUI - Mice: Bake or Die Hub [Version 1.1 BETA]
     Created May 2026 - Giraffiecy and Phoenix
 ]]
 
