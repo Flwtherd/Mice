@@ -181,7 +181,7 @@ local AutoGrindTab = MainSection:Tab({
 
 AutoGrindTab:Toggle({
     Flag = "AutoGrindZombiesToggle",
-    Title = "Auto Grind Zombies",
+    Title = "Auto Grind Zombies [Beta]",
     Desc = "Loops attack functions endlessly to clear out all zombies on the map.",
     Value = false,
     Callback = function(Value)
@@ -193,7 +193,7 @@ AutoGrindTab:Space()
 
 AutoGrindTab:Toggle({
     Flag = "AutoGrindItemsToggle",
-    Title = "Auto Deposit Items",
+    Title = "Auto Deposit Items [Beta]",
     Desc = "Endlessly delivers items to both Blueprints Table & Grinder stations.",
     Value = false,
     Callback = function(Value)
@@ -333,6 +333,72 @@ TeleportTab:Button({
             WindUI:Notify({
                 Title = "Teleport Executed",
                 Desc = "Successfully Teleported To Dinner [Base]!",
+                Icon = "check",
+            })
+        end
+    end
+})
+
+TeleportTab:Button({
+    Title = "Furniture Store",
+    Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
+    Callback = function()
+        local character = Players.LocalPlayer.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            character.HumanoidRootPart.CFrame = CFrame.new(furniturePos)
+            WindUI:Notify({
+                Title = "Teleport Executed",
+                Desc = "Successfully Teleported To !",
+                Icon = "check",
+            })
+        end
+    end
+})
+
+
+TeleportTab:Button({
+    Title = "Evergreen Facility",
+    Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
+    Callback = function()
+        local character = Players.LocalPlayer.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            character.HumanoidRootPart.CFrame = CFrame.new(evergreenPos)
+            WindUI:Notify({
+                Title = "Teleport Executed",
+                Desc = "Successfully Teleported To !",
+                Icon = "check",
+            })
+        end
+    end
+})
+
+
+TeleportTab:Button({
+    Title = "Farm/Barn",
+    Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
+    Callback = function()
+        local character = Players.LocalPlayer.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            character.HumanoidRootPart.CFrame = CFrame.new(farmPos)
+            WindUI:Notify({
+                Title = "Teleport Executed",
+                Desc = "Successfully Teleported To !",
+                Icon = "check",
+            })
+        end
+    end
+})
+
+TeleportTab:Button({
+    Title = "Bank",
+    Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
+    Callback = function()
+        local character = Players.LocalPlayer.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            character.HumanoidRootPart.CFrame = CFrame.new(BankPos)
+            WindUI:Notify({
+                Title = "Teleport Executed",
+                Desc = "Successfully Teleported To !",
                 Icon = "check",
             })
         end
