@@ -356,7 +356,7 @@ PlayerTab:Space()
 
 -- Vertical axis shifts
 PlayerTab:Button({
-    Title = "Ascend Character (UP)",
+    Title = "Up",
     Desc = "Shifts your character coordinates upward natively.",
     Callback = function()
         local character = Players.LocalPlayer.Character
@@ -367,7 +367,7 @@ PlayerTab:Button({
 })
 
 PlayerTab:Button({
-    Title = "Descend Character (DOWN)",
+    Title = "Down",
     Desc = "Shifts your character coordinates downward natively.",
     Callback = function()
         local character = Players.LocalPlayer.Character
