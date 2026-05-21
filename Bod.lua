@@ -282,6 +282,94 @@ ItemsTab:Button({
 })
 
 -- ============================================================================
+-- TELEPORT TAB
+-- ============================================================================
+local TeleportTab = MainSection:Tab({
+    Title = "Teleport",
+    Icon = "solar:map-arrow-square-bold",
+    IconColor = Color3.fromHex("#00D2FF"),
+    Border = true,
+})
+
+TeleportTab:Space()
+
+-- Vector3 Position Configurations (Replace these coordinates with your actual game choices)
+local dinnerPos     = Vector3.new(0, 10, 0)
+local furniturePos  = Vector3.new(50, 10, 50)
+local evergreenPos  = Vector3.new(-50, 15, -25)
+local farmPos       = Vector3.new(100, 12, -100)
+
+TeleportTab:Button({
+    Title = "Dinner [Base]",
+    Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
+    Callback = function()
+        local character = Players.LocalPlayer.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            character.HumanoidRootPart.CFrame = CFrame.new(dinnerPos)
+            WindUI:Notify({
+                Title = "Teleport Executed",
+                Desc = "Successfully Teleported To Dinner [Base]!",
+                Icon = "check",
+            })
+        end
+    end
+})
+
+TeleportTab:Space()
+
+TeleportTab:Button({
+    Title = "Furniture Store",
+    Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
+    Callback = function()
+        local character = Players.LocalPlayer.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            character.HumanoidRootPart.CFrame = CFrame.new(furniturePos)
+            WindUI:Notify({
+                Title = "Teleport Executed",
+                Desc = "Successfully Teleported To Furniture Store!",
+                Icon = "check",
+            })
+        end
+    end
+})
+
+TeleportTab:Space()
+
+TeleportTab:Button({
+    Title = "Evergreen",
+    Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
+    Callback = function()
+        local character = Players.LocalPlayer.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            character.HumanoidRootPart.CFrame = CFrame.new(evergreenPos)
+            WindUI:Notify({
+                Title = "Teleport Executed",
+                Desc = "Successfully Teleported To Evergreen!",
+                Icon = "check",
+            })
+        end
+    end
+})
+
+TeleportTab:Space()
+
+TeleportTab:Button({
+    Title = "Farm",
+    Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
+    Callback = function()
+        local character = Players.LocalPlayer.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            character.HumanoidRootPart.CFrame = CFrame.new(farmPos)
+            WindUI:Notify({
+                Title = "Teleport Executed",
+                Desc = "Successfully Teleported To Farm!",
+                Icon = "check",
+            })
+        end
+    end
+})
+
+-- ============================================================================
 -- PLAYER TAB (WITH INTEGRATED FLY GUI V3 FUNCTIONS)
 -- ============================================================================
 local PlayerTab = MainSection:Tab({
