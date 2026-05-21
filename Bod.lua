@@ -166,7 +166,7 @@ PatchTab:Button({
 })
 
 -- ============================================================================
--- COMBAT TAB
+-- 2. COMBAT TAB
 -- ============================================================================
 local CombatTab = MainSection:Tab({
     Title = "Combat",
@@ -175,9 +175,17 @@ local CombatTab = MainSection:Tab({
     Border = true,
 })
 
+-- Machine Loop Instructions
+CombatTab:Label({
+    Title = "How to Use Auto Station Deposit:",
+    Desc = "1. Collect your items/zombies first.\n2. Turn on the desired Station Toggle below.\n3. Wait for the loop to complete and finish!",
+})
+
+CombatTab:Space()
+
 CombatTab:Toggle({
     Flag = "KillAuraToggle",
-    Title = "Kill Aura",
+    Title = "Aura kill",
     Desc = "Automatically attacks nearby monsters.",
     Value = false,
     Callback = function(Value)
@@ -207,11 +215,36 @@ CombatTab:Space()
 
 CombatTab:Toggle({
     Flag = "AutoGrindToggle",
-    Title = "Auto Grind Monsters",
+    Title = "Auto Kill all [BETA]",
     Desc = "Continuously and automatically wipes out every zombie on the map.",
     Value = false,
     Callback = function(Value)
         _G.AutoGrindEnabled = Value
+    end
+})
+
+CombatTab:Space()
+
+-- New Station Loops Toggles
+CombatTab:Toggle({
+    Flag = "StationGrinderToggle",
+    Title = "Grind Items",
+    Desc = "Repeatedly processes items into the Grinder station deposit slot automatically.",
+    Value = false,
+    Callback = function(Value)
+        _G.StationGrindActive = Value
+    end
+})
+
+CombatTab:Space()
+
+CombatTab:Toggle({
+    Flag = "StationBlueprintToggle",
+    Title = "Grind Zombies",
+    Desc = "Repeatedly processes items into the Blueprints Table deposit slot automatically.",
+    Value = false,
+    Callback = function(Value)
+        _G.StationBlueprintActive = Value
     end
 })
 
@@ -228,7 +261,7 @@ CombatTab:Button({
                     ZAP.meleeAttack.fire({
                         monsters = {monster},
                         civilians = {},
-                        activeSlot = _G.WeaponSlot or 2
+                        activeSlot = _G.WeaponSlot
                     })
                     task.wait(0.1)
                 end
@@ -1582,7 +1615,7 @@ task.spawn(function()
         if _G.AutoGrindEnabled then
             local character = Players.LocalPlayer.Character
             if character and character:FindFirstChild("HumanoidRootPart") then
-                local slot = _G.WeaponSlot or 2
+                local slot = _G.WeaponSlot
                 local targets = {}
                 
                 for _, monster in pairs(workspace.Monsters:GetChildren()) do
@@ -1606,12 +1639,12 @@ end)
 -- Thread 2: Kill Aura Proximity Sweeper
 task.spawn(function()
     while true do
-        task.wait(0.05)
+        task.wait(0.01)
         if _G.KillAuraEnabled and not _G.AutoGrindEnabled then
             local character = Players.LocalPlayer.Character
             if character and character:FindFirstChild("HumanoidRootPart") then
                 local root = character.HumanoidRootPart
-                local slot = _G.WeaponSlot or 2
+                local slot = _G.WeaponSlot 
                 local distance = _G.AuraDistance or 25
                 
                 for _, monster in pairs(workspace.Monsters:GetChildren()) do
@@ -1660,6 +1693,50 @@ task.spawn(function()
     end
 end)
 
+-- New Thread: Automated Grinder Machine Network Controller
+task.spawn(function()
+    while true do
+        task.wait(0.1) -- Fast safe execution pacing
+        if _G.StationGrindActive then
+            pcall(function()
+                local deposit = workspace:FindFirstChild("Stations")
+                    and workspace.Stations:FindFirstChild("Grinder")
+                    and workspace.Stations.Grinder:FindFirstChild("ObjectDeposit")
+                
+                if deposit then
+                    local args = {
+                        buffer.fromstring("\027\001"),
+                        { deposit }
+                    }
+                    ZapReliable:FireServer(unpack(args))
+                end
+            end)
+        end
+    end
+end)
+
+-- New Thread: Automated Blueprints Table Network Controller
+task.spawn(function()
+    while true do
+        task.wait(0.1) -- Fast safe execution pacing
+        if _G.StationBlueprintActive then
+            pcall(function()
+                local deposit = workspace:FindFirstChild("Stations")
+                    and workspace.Stations:FindFirstChild("BlueprintsTable")
+                    and workspace.Stations.BlueprintsTable:FindFirstChild("ObjectDeposit")
+                
+                if deposit then
+                    local args = {
+                        buffer.fromstring("\027\001"),
+                        { deposit }
+                    }
+                    ZapReliable:FireServer(unpack(args))
+                end
+            end)
+        end
+    end
+end)
+
 -- Thread 5: Fly GUI V3 Control Vector Processing Loop
 task.spawn(function()
     local ctrl = {f = 0, b = 0, l = 0, r = 0}
@@ -1691,7 +1768,6 @@ task.spawn(function()
         local character = Players.LocalPlayer.Character
         
         if _G.FlyV3Active and character and character:FindFirstChildOfClass("Humanoid") and character.Humanoid.Health > 0 then
-            -- Safely identify the correct torso / alignment part regardless of R6 or R15 rig
             local targetTorso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso") or character:FindFirstChild("HumanoidRootPart")
             
             if targetTorso then
@@ -1734,7 +1810,6 @@ task.spawn(function()
                 bg.CFrame = workspace.CurrentCamera.CoordinateFrame * CFrame.Angles(-math.rad((ctrl.f + ctrl.b) * 50 * speed / maxspeed), 0, 0)
             end
         else
-            -- Cleanup loops smoothly if fly state drops or player dies
             if character then
                 local targetTorso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso") or character:FindFirstChild("HumanoidRootPart")
                 if targetTorso then
@@ -1753,7 +1828,4 @@ end)
 
 -- Interface Deployment
 Window:SelectTab(PatchTab)
-print(".ftgs hub | WindUI Interface Loaded successfully with Fly V3 Backend Extension!")
--- Interface Deployment
-Window:SelectTab(PatchTab)
-print(".ftgs hub | WindUI Interface Loaded successfully with Fly V3 Backend Extension!")
+print(".ftgs hub | WindUI Interface Loaded successfully!")
