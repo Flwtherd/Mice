@@ -1,8 +1,7 @@
 local RunService = game:GetService("RunService")
 
 --[[
-    WindUI - Mice: Bake or Die Hub
-    Migrated to latest WindUI architecture with FLY GUI V3 Integration
+    WindUI - Mice: Bake or Die Hub [Version 1.1 BETA]
 ]]
 
 -- Environment Safety Setup
@@ -33,6 +32,7 @@ end
 
 -- Load Game Remotes
 local ZAP = require(ReplicatedStorage.Client.ClientRemotes)
+local ZapReliable = ReplicatedStorage:WaitForChild("ZAP"):WaitForChild("ZAP_RELIABLE")
 
 -- ESP Setup Variables
 local ESPFolder = Instance.new("Folder")
@@ -54,7 +54,7 @@ local tpwalking = false
 
 -- Send Native Integration Notification
 game:GetService("StarterGui"):SetCore("SendNotification", { 
-    Title = "FLY GUI V3";
+    Title = "FLY";
     Text = "Integrated Natively into WindUI Framework";
     Icon = "rbxthumb://type=Asset&id=5107182114&w=150&h=150"
 })
@@ -92,8 +92,8 @@ end
 
 -- */ Window Initialization /* --
 local Window = WindUI:CreateWindow({
-    Title = "Mice  |  Bake or Die",
-    Subtitle = "Version 1.2",
+    Title = "Mice  |  Bake or Die [BETA]",
+    Subtitle = "Version 1.1",
     Folder = "BakeOrDieHub",
     Icon = "solar:folder-2-bold-duotone",
     NewElements = true,
@@ -119,27 +119,67 @@ local Window = WindUI:CreateWindow({
     },
 })
 
--- Welcome Notification
-WindUI:Popup({
-    Title = "Update info",
-    Icon = "solar:info-square-bold",
-    Content = "Version 1.2 successfully injected. FLY GUI V3 engine fully embedded.",
-    Buttons = {
-        {
-            Title = "Close",
-            Variant = "Tertiary",
-        },
-        {
-            Title = "Continue",
-            Icon = "arrow-right",
-            Variant = "Primary",
+-- ============================================================================
+-- BETA BACKGROUND CONFIGURATION
+-- ============================================================================
+local BetaBackgroundImageID = "rbxassetid://1234567890" 
+
+pcall(function()
+    if Window.Main and Window.Main:IsA("Frame") then
+        local BackgroundImage = Instance.new("ImageLabel")
+        BackgroundImage.Name = "BetaBackground"
+        BackgroundImage.Size = UDim2.new(1, 0, 1, 0)
+        BackgroundImage.Position = UDim2.new(0, 0, 0, 0)
+        BackgroundImage.Image = BetaBackgroundImageID
+        BackgroundImage.ScaleType = Enum.ScaleType.Crop
+        BackgroundImage.ImageTransparency = 0.85
+        BackgroundImage.ZIndex = 0
+        BackgroundImage.BackgroundTransparency = 1
+        BackgroundImage.Parent = Window.Main
+    end
+end)
+
+-- ============================================================================
+-- PERSISTENT POPUP MANAGEMENT
+-- ============================================================================
+local showPopup = true
+local SaveFileName = "BakeOrDie_PopupData.json"
+
+if readfile and isfile and isfile(SaveFileName) then
+    local data = HttpService:JSONDecode(readfile(SaveFileName))
+    if data and data.FirstTimeViewed == true then
+        showPopup = false
+    end
+end
+
+if showPopup then
+    WindUI:Popup({
+        Title = "Update info",
+        Icon = "solar:info-square-bold",
+        Content = "Version 1.1 Is Created [Whats New?]\n• Added network-driven Auto Grinder machine processing\n• Added network-driven Auto Blueprint machine processing\n• Included step-by-step feature operation guides",
+        Buttons = {
+            {
+                Title = "Close",
+                Variant = "Tertiary",
+            },
+            {
+                Title = "Continue",
+                Icon = "arrow-right",
+                Variant = "Primary",
+                Callback = function()
+                    if writefile then
+                        local payload = HttpService:JSONEncode({FirstTimeViewed = true})
+                        writefile(SaveFileName, payload)
+                    end
+                end
+            }
         }
-    }
-})
+    })
+end
 
 -- Version Tag
 Window:Tag({
-    Title = "v" .. WindUI.Version,
+    Title = "v1.1 Beta",
     Icon = "github",
     Color = Color3.fromHex("#1c1c1c"),
     Border = true,
@@ -150,7 +190,7 @@ local MainSection = Window:Section({ Title = "Main Framework" })
 local VisSection = Window:Section({ Title = "Visuals & Data" })
 
 -- ============================================================================
--- PATCH NOTES TAB
+-- 1. PATCH NOTES TAB
 -- ============================================================================
 local PatchTab = MainSection:Tab({
     Title = "Patch Notes",
@@ -159,14 +199,13 @@ local PatchTab = MainSection:Tab({
     Border = true,
 })
 
-PatchTab:Button({
-    Title = "[CRITICAL] Patch Notice v2.3",
-    Desc = "• FIXED: Fully optimized FLY GUI V3 architecture to support multi-rig configurations seamlessly.\n• ADDED: Natively integrated fly engines, speed multipliers, and direct axis configuration buttons.\n• OPTIMIZED: Stabilized heartbeat loops to remove random execution hitching.",
-    Callback = function() end
+PatchTab:Label({
+    Title = "[UPDATE] Patch Notice v1.1 Beta",
+    Desc = "• ADDED: Network-level automated interaction loops for both Blueprint tables and Grinder stations.\n• INSTRUCTIONS: Guide details loaded directly into the Combat section.\n• SECURITY: Pre-obfuscation stabilization checks applied.",
 })
 
 -- ============================================================================
--- COMBAT TAB
+-- 2. COMBAT TAB
 -- ============================================================================
 local CombatTab = MainSection:Tab({
     Title = "Combat",
@@ -175,9 +214,17 @@ local CombatTab = MainSection:Tab({
     Border = true,
 })
 
+-- Machine Loop Instructions
+CombatTab:Label({
+    Title = "How to Use Auto Station Deposit:",
+    Desc = "1. Collect your items/zombies first.\n2. Turn on the desired Station Toggle below.\n3. Wait for the loop to complete and finish!",
+})
+
+CombatTab:Space()
+
 CombatTab:Toggle({
     Flag = "KillAuraToggle",
-    Title = "Kill Aura",
+    Title = "yes Aura kill",
     Desc = "Automatically attacks nearby monsters.",
     Value = false,
     Callback = function(Value)
@@ -217,6 +264,31 @@ CombatTab:Toggle({
 
 CombatTab:Space()
 
+-- New Station Loops Toggles
+CombatTab:Toggle({
+    Flag = "StationGrinderToggle",
+    Title = "yes Auto Machine Grind",
+    Desc = "Repeatedly processes items into the Grinder station deposit slot automatically.",
+    Value = false,
+    Callback = function(Value)
+        _G.StationGrindActive = Value
+    end
+})
+
+CombatTab:Space()
+
+CombatTab:Toggle({
+    Flag = "StationBlueprintToggle",
+    Title = "yes Auto Blueprint Deposit",
+    Desc = "Repeatedly processes items into the Blueprints Table deposit slot automatically.",
+    Value = false,
+    Callback = function(Value)
+        _G.StationBlueprintActive = Value
+    end
+})
+
+CombatTab:Space()
+
 CombatTab:Button({
     Title = "Kill All Zombies (Manual)",
     Desc = "Attacks every monster currently in the game once.",
@@ -238,7 +310,7 @@ CombatTab:Button({
 })
 
 -- ============================================================================
--- ITEMS TAB
+-- 3. ITEMS TAB
 -- ============================================================================
 local ItemsTab = MainSection:Tab({
     Title = "Items",
@@ -256,7 +328,7 @@ ItemsTab:Button({
             for _, v in pairs(workspace.Interactables:GetChildren()) do 
                 if v:IsA("Model") and v:FindFirstChild("HumanoidRootPart") and not v:FindFirstChild("ProductPriceTag") then
                     v.PrimaryPart.CFrame = character.PrimaryPart.CFrame
-                    task.wait(0.05)
+                    task.wait(0.01)
                 end
             end
         end
@@ -274,7 +346,7 @@ ItemsTab:Button({
             for _, v in pairs(workspace.Interactables:GetChildren()) do 
                 if v:IsA("Model") and not v:FindFirstChild("ProductPriceTag") and v.PrimaryPart then
                     v.PrimaryPart.CFrame = character.PrimaryPart.CFrame
-                    task.wait(0.05)
+                    task.wait(0.01)
                 end
             end
         end
@@ -282,7 +354,7 @@ ItemsTab:Button({
 })
 
 -- ============================================================================
--- PLAYER TAB (WITH INTEGRATED FLY GUI V3 FUNCTIONS)
+-- 4. PLAYER TAB (WITH INTEGRATED FLY GUI V3 FUNCTIONS)
 -- ============================================================================
 local PlayerTab = MainSection:Tab({
     Title = "Player Settings",
@@ -291,10 +363,9 @@ local PlayerTab = MainSection:Tab({
     Border = true,
 })
 
--- Fly GUI V3 Active state management toggle
 PlayerTab:Toggle({
     Flag = "FlyV3Toggle",
-    Title = "Fly Engine (V3 Backend)",
+    Title = "Fly",
     Desc = "Toggles standard core system flight modes natively.",
     Value = false,
     Callback = function(Value)
@@ -306,7 +377,6 @@ PlayerTab:Toggle({
         local humanoid = character:FindFirstChildOfClass("Humanoid")
         
         if not _G.FlyV3Active then
-            -- Reset state back to default
             for _, state in ipairs(Enum.HumanoidStateType:GetEnumItems()) do
                 pcall(function() humanoid:SetStateEnabled(state, true) end)
             end
@@ -314,7 +384,6 @@ PlayerTab:Toggle({
             if character:FindFirstChild("Animate") then character.Animate.Disabled = false end
             tpwalking = false
         else
-            -- Enable fly state adjustments
             StartTpWalk()
             if character:FindFirstChild("Animate") then character.Animate.Disabled = true end
             
@@ -332,10 +401,9 @@ PlayerTab:Toggle({
 
 PlayerTab:Space()
 
--- Speed value modifications 
 PlayerTab:Slider({
     Flag = "FlyV3SpeedSlider",
-    Title = "Fly Speed Multiplier",
+    Title = "Fly Speed",
     Desc = "Increases vector movement velocity steps dynamically.",
     IsTooltip = true,
     Step = 1,
@@ -354,9 +422,8 @@ PlayerTab:Slider({
 
 PlayerTab:Space()
 
--- Vertical axis shifts
 PlayerTab:Button({
-    Title = "Ascend Character (UP)",
+    Title = "UP",
     Desc = "Shifts your character coordinates upward natively.",
     Callback = function()
         local character = Players.LocalPlayer.Character
@@ -367,7 +434,7 @@ PlayerTab:Button({
 })
 
 PlayerTab:Button({
-    Title = "Descend Character (DOWN)",
+    Title = "DOWN",
     Desc = "Shifts your character coordinates downward natively.",
     Callback = function()
         local character = Players.LocalPlayer.Character
@@ -431,6 +498,64 @@ PlayerTab:Dropdown({
     Value = "2",
     Callback = function(Option)
         _G.WeaponSlot = tonumber(Option)
+    end
+})
+
+-- ============================================================================
+-- 5. TELEPORT TAB
+-- ============================================================================
+local TeleportTab = MainSection:Tab({
+    Title = "Teleport",
+    Icon = "solar:map-arrow-square-bold",
+    IconColor = Color3.fromHex("#00D2FF"),
+    Border = true,
+})
+
+local TargetX, TargetY, TargetZ = 0, 0, 0
+
+TeleportTab:Input({
+    Title = "Coordinate X",
+    Icon = "file-cog",
+    Callback = function(value)
+        TargetX = tonumber(value) or 0
+    end
+})
+
+TeleportTab:Space()
+
+TeleportTab:Input({
+    Title = "Coordinate Y",
+    Icon = "file-cog",
+    Callback = function(value)
+        TargetY = tonumber(value) or 0
+    end
+})
+
+TeleportTab:Space()
+
+TeleportTab:Input({
+    Title = "Coordinate Z",
+    Icon = "file-cog",
+    Callback = function(value)
+        TargetZ = tonumber(value) or 0
+    end
+})
+
+TeleportTab:Space()
+
+TeleportTab:Button({
+    Title = "Teleport to Coordinates",
+    Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
+    Callback = function()
+        local character = Players.LocalPlayer.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            character.HumanoidRootPart.CFrame = CFrame.new(Vector3.new(TargetX, TargetY, TargetZ))
+            WindUI:Notify({
+                Title = "Teleport Executed",
+                Desc = "Successfully warped to coordinates: " .. TargetX .. ", " .. TargetY .. ", " .. TargetZ,
+                Icon = "check",
+            })
+        end
     end
 })
 
@@ -606,22 +731,6 @@ UpdateESP = function()
 end
 
 -- ============================================================================
--- INFO TAB
--- ============================================================================
-local InfoTab = VisSection:Tab({
-    Title = "Info Panel",
-    Icon = "solar:info-square-bold",
-    IconColor = Color3.fromHex("#83889E"),
-    Border = true,
-})
-
-InfoTab:Button({
-    Title = "Bake or Die Features Status",
-    Desc = "• Kill Aura & Infinite Auto Grind Engine\n• Instant Kill All Entities\n• Network Item Retrieval Framework\n• Streamlined Stat Bypass Controls\n• Multi-Target Threaded ESP Suite\n• Embedded FLY GUI V3 Multiplier Setup",
-    Callback = function() end
-})
-
--- ============================================================================
 -- CONFIGURATION MANAGER PANEL
 -- ============================================================================
 if not RunService:IsStudio() and writefile and printidentity() then
@@ -730,7 +839,7 @@ end)
 -- Thread 2: Kill Aura Proximity Sweeper
 task.spawn(function()
     while true do
-        task.wait(0.05)
+        task.wait(0.01)
         if _G.KillAuraEnabled and not _G.AutoGrindEnabled then
             local character = Players.LocalPlayer.Character
             if character and character:FindFirstChild("HumanoidRootPart") then
@@ -784,6 +893,50 @@ task.spawn(function()
     end
 end)
 
+-- New Thread: Automated Grinder Machine Network Controller
+task.spawn(function()
+    while true do
+        task.wait(0.1) -- Fast safe execution pacing
+        if _G.StationGrindActive then
+            pcall(function()
+                local deposit = workspace:FindFirstChild("Stations")
+                    and workspace.Stations:FindFirstChild("Grinder")
+                    and workspace.Stations.Grinder:FindFirstChild("ObjectDeposit")
+                
+                if deposit then
+                    local args = {
+                        buffer.fromstring("\027\001"),
+                        { deposit }
+                    }
+                    ZapReliable:FireServer(unpack(args))
+                end
+            end)
+        end
+    end
+end)
+
+-- New Thread: Automated Blueprints Table Network Controller
+task.spawn(function()
+    while true do
+        task.wait(0.1) -- Fast safe execution pacing
+        if _G.StationBlueprintActive then
+            pcall(function()
+                local deposit = workspace:FindFirstChild("Stations")
+                    and workspace.Stations:FindFirstChild("BlueprintsTable")
+                    and workspace.Stations.BlueprintsTable:FindFirstChild("ObjectDeposit")
+                
+                if deposit then
+                    local args = {
+                        buffer.fromstring("\027\001"),
+                        { deposit }
+                    }
+                    ZapReliable:FireServer(unpack(args))
+                end
+            end)
+        end
+    end
+end)
+
 -- Thread 5: Fly GUI V3 Control Vector Processing Loop
 task.spawn(function()
     local ctrl = {f = 0, b = 0, l = 0, r = 0}
@@ -815,7 +968,6 @@ task.spawn(function()
         local character = Players.LocalPlayer.Character
         
         if _G.FlyV3Active and character and character:FindFirstChildOfClass("Humanoid") and character.Humanoid.Health > 0 then
-            -- Safely identify the correct torso / alignment part regardless of R6 or R15 rig
             local targetTorso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso") or character:FindFirstChild("HumanoidRootPart")
             
             if targetTorso then
@@ -858,7 +1010,6 @@ task.spawn(function()
                 bg.CFrame = workspace.CurrentCamera.CoordinateFrame * CFrame.Angles(-math.rad((ctrl.f + ctrl.b) * 50 * speed / maxspeed), 0, 0)
             end
         else
-            -- Cleanup loops smoothly if fly state drops or player dies
             if character then
                 local targetTorso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso") or character:FindFirstChild("HumanoidRootPart")
                 if targetTorso then
@@ -877,4 +1028,4 @@ end)
 
 -- Interface Deployment
 Window:SelectTab(PatchTab)
-print(".ftgs hub | WindUI Interface Loaded successfully with Fly V3 Backend Extension!")
+print(".ftgs hub | WindUI Interface Loaded successfully!")
