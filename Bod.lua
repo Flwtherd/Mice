@@ -216,34 +216,35 @@ CombatTab:Toggle({
 
 CombatTab:Space()
 
--- SMART AUTO IDENTIFIER INTERFACE LOOPS
-_G.SmartGrinderEnabled = false
+-- SMART IDENTIFIER LOOP IMPLEMENTATION
+_G.SmartIdentifierEnabled = false
 CombatTab:Toggle({
-    Flag = "SmartGrinderToggle",
+    Flag = "SmartIdentifierToggle",
     Title = "Smart Item/Zombie Identifier",
-    Desc = "Identifies carried entities automatically and fires them to Blueprints Table or Grinder.",
+    Desc = "Detects whether you hold a zombie or item and pushes them to the Grinder or Blueprint Table automatically.",
     Value = false,
     Callback = function(Value)
-        _G.SmartGrinderEnabled = Value
+        _G.SmartIdentifierEnabled = Value
         if Value then
             task.spawn(function()
-                while _G.SmartGrinderEnabled do
-                    local char = Players.LocalPlayer.Character
-                    if char then
-                        -- Check for objects directly welded, equipped, or held in the character model
-                        for _, child in pairs(char:GetChildren()) do
-                            if child:IsA("Model") or child:IsA("Tool") then
-                                -- Identification Criteria: Bodies have HumanoidRootParts or specific parts [cite: 14]
-                                local isZombieOrBody = child:FindFirstChild("HumanoidRootPart") or child:FindFirstChild("Head") or child.Name:lower():find("zombie") or child.Name:lower():find("body") [cite: 14]
-                                -- Items lack player price tags and are standard structural instances 
-                                local isItemOrBlueprint = not child:FindFirstChild("ProductPriceTag") and not isZombieOrBody [cite: 14, 15]
-
-                                local stations = workspace:FindFirstChild("Stations")
+                while _G.SmartIdentifierEnabled do
+                    local character = Players.LocalPlayer.Character
+                    local stations = workspace:FindFirstChild("Stations")
+                    
+                    if character and stations then
+                        -- Check for objects standardly held or welded within your character model
+                        for _, obj in pairs(character:GetChildren()) do
+                            if obj:IsA("Model") or obj:IsA("Tool") then
+                                -- Check if it's a corpse / zombie based on structural properties
+                                local isZombieOrBody = obj:FindFirstChild("HumanoidRootPart") or obj:FindFirstChild("Head") or string.find(string.lower(obj.Name), "zombie") or string.find(string.lower(obj.Name), "body")
+                                -- Standard items do not have purchase tags and are standard objects
+                                local isItemOrBlueprint = not obj:FindFirstChild("ProductPriceTag") and not isZombieOrBody
                                 
-                                if isZombieOrBody and stations then
+                                if isZombieOrBody then
                                     local grinder = stations:FindFirstChild("Grinder")
                                     local deposit = grinder and grinder:FindFirstChild("ObjectDeposit")
                                     if deposit then
+                                        -- Fire the specific interaction remote sequence
                                         local args = {
                                             buffer.fromstring("\027\001"),
                                             { deposit }
@@ -251,10 +252,11 @@ CombatTab:Toggle({
                                         game:GetService("ReplicatedStorage"):WaitForChild("ZAP"):WaitForChild("ZAP_RELIABLE"):FireServer(unpack(args))
                                     end
                                     
-                                elseif isItemOrBlueprint and stations then
+                                elseif isItemOrBlueprint then
                                     local blueprintTable = stations:FindFirstChild("BlueprintsTable")
                                     local deposit = blueprintTable and blueprintTable:FindFirstChild("ObjectDeposit")
                                     if deposit then
+                                        -- Fire the specific interaction remote sequence
                                         local args = {
                                             buffer.fromstring("\027\001"),
                                             { deposit }
@@ -265,7 +267,7 @@ CombatTab:Toggle({
                             end
                         end
                     end
-                    task.wait(0.3) -- Loop interval cooldown
+                    task.wait(0.3) -- Built-in processing wait interval
                 end
             end)
         end
