@@ -3,7 +3,7 @@ local RunService = game:GetService("RunService")
 --[[
     WindUI - Mice: Bake or Die Hub
     Migrated to latest WindUI architecture with FLY GUI V3 Integration
-    Custom Background Theme Applied
+    Optimized Background Loading Strategy
 ]]
 
 -- Environment Safety Setup
@@ -96,7 +96,7 @@ local function StartTpWalk()
     end
 end
 
--- */ Window Initialization with Custom Theme Background /* --
+-- */ Window Initialization /* --
 local Window = WindUI:CreateWindow({
     Title = "Mice  |  Bake or Die",
     Subtitle = "Version 1.2",
@@ -105,13 +105,6 @@ local Window = WindUI:CreateWindow({
     NewElements = true,
     Size = UDim2.fromOffset(550, 420),
     HideSearchBar = false,
-    
-    -- Custom Background Asset Injection
-    Background = {
-        Asset = "https://github.com/Flwtherd/Mice/blob/main/7ee89648e016d0f274fc500f90d66911.jpg?raw=true",
-        Transparency = 0.15, -- Adjust opacity to ensure text readability
-        ScaleType = Enum.ScaleType.Crop
-    },
 
     OpenButton = {
         Title = "Open Bake or Die",
@@ -131,6 +124,21 @@ local Window = WindUI:CreateWindow({
         ButtonsType = "Default",
     },
 })
+
+-- SAFE BACKGROUND THEME APPLICATION
+-- Using a pcall inside a spawn block prevents your executor from completely locking up the script if the image asset fails to fetch.
+task.spawn(function()
+    pcall(function()
+        if Window and Window.Instance and Window.Instance:FindFirstChild("Background") then
+            local bgImage = Window.Instance.Background
+            if bgImage:IsA("ImageLabel") then
+                bgImage.Image = "https://github.com/Flwtherd/Mice/blob/main/7ee89648e016d0f274fc500f90d66911.jpg?raw=true"
+                bgImage.ImageTransparency = 0.2
+                bgImage.ScaleType = Enum.ScaleType.Crop
+            end
+        end
+    end)
+end)
 
 -- Welcome Notification
 WindUI:Popup({
