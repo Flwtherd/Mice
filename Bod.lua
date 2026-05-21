@@ -296,9 +296,9 @@ TeleportTab:Space()
 -- Vector3 Position Configurations (Replace these coordinates with your actual game choices)
 local dinnerPos     = Vector3.new(-26, 52, 98)
 local furniturePos  = Vector3.new(-204, 52, 14)
-local evergreenPos  = Vector3.new(-460, 15, -25)
-local farmPos       = Vector3.new(100, 57, -347)
-local BankPos       = Vector3.new(952, 52, -128)
+local evergreenPos  = Vector3.new(-460, 57, -347)
+local farmPos       = Vector3.new(-167, 55, -394)
+local BankPos       = Vector3.new(949, 53, -126)
 
 TeleportTab:Button({
     Title = "Dinner [Base]",
