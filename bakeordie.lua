@@ -493,9 +493,13 @@ local TeleportTab = MainSection:Tab({
 
 TeleportTab:Space()
 
--- Placeholder target positions since TargetX, TargetY, TargetZ were completely missing.
--- Replace Vector3.new(0, 10, 0) with your actual coordinate choices.
-local targetPos = Vector3.new(0, 10, 0)
+-- Define your target coordinates here so the game does not crash when clicked
+local TargetCoordinates = {
+    Dinner = Vector3.new(0, 0, 0),
+    Furniture = Vector3.new(0, 0, 0),
+    Evergreen = Vector3.new(0, 0, 0),
+    Farm = Vector3.new(0, 0, 0)
+}
 
 TeleportTab:Button({
     Title = "Dinner [Base]",
@@ -503,7 +507,7 @@ TeleportTab:Button({
     Callback = function()
         local character = Players.LocalPlayer.Character
         if character and character:FindFirstChild("HumanoidRootPart") then
-            character.HumanoidRootPart.CFrame = CFrame.new(targetPos)
+            character.HumanoidRootPart.CFrame = CFrame.new(TargetCoordinates.Dinner)
             WindUI:Notify({
                 Title = "Teleport Executed",
                 Desc = "Successfully Teleported To Dinner [Base]!",
@@ -513,14 +517,13 @@ TeleportTab:Button({
     end
 })
 
--- Fixed syntax: unclosed string literal on description fixed
 TeleportTab:Button({
     Title = "Furniture Store",
     Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
     Callback = function()
         local character = Players.LocalPlayer.Character
         if character and character:FindFirstChild("HumanoidRootPart") then
-            character.HumanoidRootPart.CFrame = CFrame.new(targetPos)
+            character.HumanoidRootPart.CFrame = CFrame.new(TargetCoordinates.Furniture)
             WindUI:Notify({
                 Title = "Teleport Executed",
                 Desc = "Successfully Teleported To Furniture Store!",
@@ -530,14 +533,13 @@ TeleportTab:Button({
     end
 })
 
--- Fixed syntax: unclosed string literal on description fixed
 TeleportTab:Button({
     Title = "Evergreen",
     Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
     Callback = function()
         local character = Players.LocalPlayer.Character
         if character and character:FindFirstChild("HumanoidRootPart") then
-            character.HumanoidRootPart.CFrame = CFrame.new(targetPos)
+            character.HumanoidRootPart.CFrame = CFrame.new(TargetCoordinates.Evergreen)
             WindUI:Notify({
                 Title = "Teleport Executed",
                 Desc = "Successfully Teleported To Evergreen!",
@@ -547,14 +549,13 @@ TeleportTab:Button({
     end
 })
 
--- Fixed syntax: unclosed string literal on description fixed
 TeleportTab:Button({
     Title = "Farm",
     Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
     Callback = function()
         local character = Players.LocalPlayer.Character
         if character and character:FindFirstChild("HumanoidRootPart") then
-            character.HumanoidRootPart.CFrame = CFrame.new(targetPos)
+            character.HumanoidRootPart.CFrame = CFrame.new(TargetCoordinates.Farm)
             WindUI:Notify({
                 Title = "Teleport Executed",
                 Desc = "Successfully Teleported To Farm!",
