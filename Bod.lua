@@ -93,7 +93,7 @@ end
 
 -- */ Window Initialization /* --
 local Window = WindUI:CreateWindow({
-    Title = "Mice  |  Bake or Die [BETA]",
+    Title = "Mice  |  Bake or Die ",
     Subtitle = "Version 1.0",
     Folder = "BakeOrDieHub",
     Icon = "solar:folder-2-bold-duotone",
