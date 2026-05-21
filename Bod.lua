@@ -294,10 +294,11 @@ local TeleportTab = MainSection:Tab({
 TeleportTab:Space()
 
 -- Vector3 Position Configurations (Replace these coordinates with your actual game choices)
-local dinnerPos     = Vector3.new(0, 10, 0)
-local furniturePos  = Vector3.new(50, 10, 50)
-local evergreenPos  = Vector3.new(-50, 15, -25)
-local farmPos       = Vector3.new(100, 12, -100)
+local dinnerPos     = Vector3.new(-26, 52, 98)
+local furniturePos  = Vector3.new(-204, 52, 14)
+local evergreenPos  = Vector3.new(-460, 15, -25)
+local farmPos       = Vector3.new(100, 57, -347)
+local BankPos       = Vector3.new(952, 52, -128)
 
 TeleportTab:Button({
     Title = "Dinner [Base]",
@@ -368,6 +369,25 @@ TeleportTab:Button({
         end
     end
 })
+
+TeleportTab:Space()
+
+TeleportTab:Button({
+    Title = "Bank",
+    Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
+    Callback = function()
+        local character = Players.LocalPlayer.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            character.HumanoidRootPart.CFrame = CFrame.new(farmPos)
+            WindUI:Notify({
+                Title = "Teleport Executed",
+                Desc = "Successfully Teleported To Bank!",
+                Icon = "check",
+            })
+        end
+    end
+})
+
 
 -- ============================================================================
 -- PLAYER TAB (WITH INTEGRATED FLY GUI V3 FUNCTIONS)
