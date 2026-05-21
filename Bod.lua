@@ -378,7 +378,7 @@ TeleportTab:Button({
     Callback = function()
         local character = Players.LocalPlayer.Character
         if character and character:FindFirstChild("HumanoidRootPart") then
-            character.HumanoidRootPart.CFrame = CFrame.new(farmPos)
+            character.HumanoidRootPart.CFrame = CFrame.new(BankPos)
             WindUI:Notify({
                 Title = "Teleport Executed",
                 Desc = "Successfully Teleported To Bank!",
