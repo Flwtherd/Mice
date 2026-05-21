@@ -123,7 +123,7 @@ local Window = WindUI:CreateWindow({
 -- ============================================================================
 -- BETA BACKGROUND CONFIGURATION
 -- ============================================================================
-local BetaBackgroundImageID = "rbxassetid://1234567890" 
+local BetaBackgroundImageID = "rbxassetid://101063969009427" 
 
 pcall(function()
     if Window.Main and Window.Main:IsA("Frame") then
