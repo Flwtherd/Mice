@@ -146,8 +146,7 @@ Window:Tag({
 })
 
 -- */ Section Assignments /* --
-local MainSection = Window:Section({ Title = "Main Framework" })
-local VisSection = Window:Section({ Title = "Visuals & Data" })
+local MainSection = Window:Section({ Title = "Main" })
 
 -- ============================================================================
 -- PATCH NOTES TAB
@@ -545,8 +544,8 @@ PlayerTab:Dropdown({
 -- ============================================================================
 -- ESP TAB & FUNCTIONS
 -- ============================================================================
-local ESPTab = VisSection:Tab({
-    Title = "ESP Engine",
+local ESPTab = MainSection:Tab({
+    Title = "ESP",
     Icon = "solar:check-square-bold",
     IconColor = Color3.fromHex("#10C550"),
     Border = true,
@@ -712,23 +711,6 @@ UpdateESP = function()
         end
     end
 end
-
--- ============================================================================
--- INFO TAB
--- ============================================================================
-local InfoTab = VisSection:Tab({
-    Title = "Info Panel",
-    Icon = "solar:info-square-bold",
-    IconColor = Color3.fromHex("#83889E"),
-    Border = true,
-})
-
-InfoTab:Button({
-    Title = "Bake or Die Features Status",
-    Desc = "• Kill Aura & Infinite Auto Grind Engine\n• Instant Kill All Entities\n• Network Item Retrieval Framework\n• Streamlined Stat Bypass Controls\n• Multi-Target Threaded ESP Suite\n• Embedded FLY GUI V3 Multiplier Setup",
-    Callback = function() end
-})
-
 -- ============================================================================
 -- CONFIGURATION MANAGER PANEL
 -- ============================================================================
