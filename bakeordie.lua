@@ -247,7 +247,7 @@ CombatTab:Space()
 -- New Station Loops Toggles
 CombatTab:Toggle({
     Flag = "StationGrinderToggle",
-    Title = "Grid Items",
+    Title = "Grind Items",
     Desc = "Repeatedly processes items into the Grinder station deposit slot automatically.",
     Value = false,
     Callback = function(Value)
