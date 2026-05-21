@@ -1,7 +1,7 @@
 local RunService = game:GetService("RunService")
 
 --[[
-    WindUI - Mice: Bake or Die Hub [Version 1.0 BETA]
+    WindUI - Mice: Bake or Die Hub [Version 1.1 BETA]
     Created May 2026 - Giraffiecy and Phoenix
 ]]
 
@@ -94,7 +94,7 @@ end
 -- */ Window Initialization /* --
 local Window = WindUI:CreateWindow({
     Title = "Mice  |  Bake or Die [BETA]",
-    Subtitle = "Version 1.0",
+    Subtitle = "Version 1.1",
     Folder = "BakeOrDieHub",
     Icon = "solar:folder-2-bold-duotone",
     NewElements = true,
@@ -160,7 +160,7 @@ end
 
 -- Version Tag
 Window:Tag({
-    Title = "v1.0 Beta",
+    Title = "v1.1 Beta",
     Icon = "github",
     Color = Color3.fromHex("#1c1c1c"),
     Border = true,
@@ -194,7 +194,6 @@ local CombatTab = MainSection:Tab({
     Border = true,
 })
 
--- Machine Loop Instructions
 CombatTab:Label({
     Title = "How to Use Auto Station Deposit:",
     Desc = "1. Collect your items/zombies first.\n2. Turn on the desired Station Toggle below.\n3. Wait for the loop to complete and finish!",
@@ -244,7 +243,6 @@ CombatTab:Toggle({
 
 CombatTab:Space()
 
--- New Station Loops Toggles
 CombatTab:Toggle({
     Flag = "StationGrinderToggle",
     Title = "Grind Items",
@@ -315,26 +313,8 @@ ItemsTab:Button({
     end
 })
 
-ItemsTab:Space()
-
-ItemsTab:Button({
-    Title = "Bring All Items",
-    Desc = "Teleports all regular items to your position.",
-    Callback = function()
-        local character = Players.LocalPlayer.Character
-        if character and character.PrimaryPart then
-            for _, v in pairs(workspace.Interactables:GetChildren()) do 
-                if v:IsA("Model") and not v:FindFirstChild("ProductPriceTag") and v.PrimaryPart then
-                    v.PrimaryPart.CFrame = character.PrimaryPart.CFrame
-                    task.wait(0.01)
-                end
-            end
-        end
-    end
-})
-
 -- ============================================================================
--- 4. PLAYER TAB (WITH INTEGRATED FLY GUI V3 FUNCTIONS)
+-- 4. PLAYER TAB
 -- ============================================================================
 local PlayerTab = MainSection:Tab({
     Title = "Player",
@@ -352,7 +332,6 @@ PlayerTab:Toggle({
         _G.FlyV3Active = Value
         local speaker = Players.LocalPlayer
         local character = speaker.Character
-        
         if not character or not character:FindFirstChildOfClass("Humanoid") then return end
         local humanoid = character:FindFirstChildOfClass("Humanoid")
         
@@ -366,11 +345,9 @@ PlayerTab:Toggle({
         else
             StartTpWalk()
             if character:FindFirstChild("Animate") then character.Animate.Disabled = true end
-            
             for _, anim in next, humanoid:GetPlayingAnimationTracks() do
                 anim:AdjustSpeed(0)
             end
-            
             for _, state in ipairs(Enum.HumanoidStateType:GetEnumItems()) do
                 pcall(function() humanoid:SetStateEnabled(state, false) end)
             end
@@ -387,40 +364,10 @@ PlayerTab:Slider({
     Desc = "Increases vector movement velocity steps dynamically.",
     IsTooltip = true,
     Step = 1,
-    Value = {
-        Min = 1,
-        Max = 20,
-        Default = 1,
-    },
+    Value = { Min = 1, Max = 20, Default = 1 },
     Callback = function(Value)
         _G.FlyV3Speeds = Value
-        if _G.FlyV3Active then
-            StartTpWalk()
-        end
-    end
-})
-
-PlayerTab:Space()
-
-PlayerTab:Button({
-    Title = "UP",
-    Desc = "Shifts your character coordinates upward natively.",
-    Callback = function()
-        local character = Players.LocalPlayer.Character
-        if character and character:FindFirstChild("HumanoidRootPart") then
-            character.HumanoidRootPart.CFrame = character.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
-        end
-    end
-})
-
-PlayerTab:Button({
-    Title = "DOWN",
-    Desc = "Shifts your character coordinates downward natively.",
-    Callback = function()
-        local character = Players.LocalPlayer.Character
-        if character and character:FindFirstChild("HumanoidRootPart") then
-            character.HumanoidRootPart.CFrame = character.HumanoidRootPart.CFrame * CFrame.new(0, -5, 0)
-        end
+        if _G.FlyV3Active then StartTpWalk() end
     end
 })
 
@@ -432,11 +379,7 @@ PlayerTab:Slider({
     Desc = "Modify your walking movement speed.",
     IsTooltip = true,
     Step = 1,
-    Value = {
-        Min = 16,
-        Max = 200,
-        Default = 16,
-    },
+    Value = { Min = 16, Max = 200, Default = 16 },
     Callback = function(Value)
         _G.WalkSpeed = Value
         local character = Players.LocalPlayer.Character
@@ -454,11 +397,7 @@ PlayerTab:Slider({
     Desc = "Modify your maximum jump height.",
     IsTooltip = true,
     Step = 1,
-    Value = {
-        Min = 50,
-        Max = 200,
-        Default = 50,
-    },
+    Value = { Min = 50, Max = 200, Default = 50 },
     Callback = function(Value)
         _G.JumpPower = Value
         local character = Players.LocalPlayer.Character
@@ -493,12 +432,11 @@ local TeleportTab = MainSection:Tab({
 
 TeleportTab:Space()
 
--- Define your target coordinates here so the game does not crash when clicked
 local TargetCoordinates = {
-    Dinner = Vector3.new(0, 0, 0),
-    Furniture = Vector3.new(0, 0, 0),
-    Evergreen = Vector3.new(0, 0, 0),
-    Farm = Vector3.new(0, 0, 0)
+    Dinner = Vector3.new(125, 10, -45),
+    FurnitureStore = Vector3.new(-210, 12, 85),
+    Evergreen = Vector3.new(415, 8, -320),
+    Farm = Vector3.new(-530, 15, -110)
 }
 
 TeleportTab:Button({
@@ -523,7 +461,7 @@ TeleportTab:Button({
     Callback = function()
         local character = Players.LocalPlayer.Character
         if character and character:FindFirstChild("HumanoidRootPart") then
-            character.HumanoidRootPart.CFrame = CFrame.new(TargetCoordinates.Furniture)
+            character.HumanoidRootPart.CFrame = CFrame.new(TargetCoordinates.FurnitureStore)
             WindUI:Notify({
                 Title = "Teleport Executed",
                 Desc = "Successfully Teleported To Furniture Store!",
@@ -566,7 +504,7 @@ TeleportTab:Button({
 })
 
 -- ============================================================================
--- ESP TAB & FUNCTIONS
+-- 6. ESP TAB & FUNCTIONS
 -- ============================================================================
 local ESPTab = MainSection:Tab({
     Title = "ESP",
@@ -699,7 +637,6 @@ end
 
 UpdateESP = function()
     ClearESP()
-    
     local character = Players.LocalPlayer.Character
     if not character or not character:FindFirstChild("HumanoidRootPart") then return end
     local playerRoot = character.HumanoidRootPart
@@ -737,81 +674,7 @@ UpdateESP = function()
 end
 
 -- ============================================================================
--- CONFIGURATION MANAGER PANEL
--- ============================================================================
-if not RunService:IsStudio() and writefile and printidentity() then
-    local ConfigTab = MainSection:Tab({
-        Title = "Config Center",
-        Icon = "solar:folder-with-files-bold",
-        IconColor = Color3.fromHex("#7775F2"),
-        Border = true,
-    })
-
-    local ConfigManager = Window.ConfigManager
-    local ConfigName = "default"
-
-    local ConfigNameInput = ConfigTab:Input({
-        Title = "Config Profiler",
-        Icon = "file-cog",
-        Callback = function(value)
-            ConfigName = value
-        end
-    })
-
-    ConfigTab:Space()
-
-    local AllConfigs = ConfigManager:AllConfigs()
-    local DefaultValue = table.find(AllConfigs, ConfigName) and ConfigName or nil
-
-    local AllConfigsDropdown = ConfigTab:Dropdown({
-        Title = "Saved Presets",
-        Desc = "Choose an existing configuration payload",
-        Values = AllConfigs,
-        Value = DefaultValue,
-        Callback = function(value)
-            ConfigName = value
-            ConfigNameInput:Set(value)
-        end,
-    })
-
-    ConfigTab:Space()
-
-    ConfigTab:Button({
-        Title = "Save Preset",
-        Justify = "Center",
-        Callback = function()
-            Window.CurrentConfig = ConfigManager:Config(ConfigName)
-            if Window.CurrentConfig:Save() then
-                WindUI:Notify({
-                    Title = "Config Saved",
-                    Desc = "Config '" .. ConfigName .. "' successfully processed.",
-                    Icon = "check",
-                })
-            end
-            AllConfigsDropdown:Refresh(ConfigManager:AllConfigs())
-        end,
-    })
-
-    ConfigTab:Space()
-
-    ConfigTab:Button({
-        Title = "Load Preset",
-        Justify = "Center",
-        Callback = function()
-            Window.CurrentConfig = ConfigManager:CreateConfig(ConfigName)
-            if Window.CurrentConfig:Load() then
-                WindUI:Notify({
-                    Title = "Config Operational",
-                    Desc = "Loaded '" .. ConfigName .. "' settings.",
-                    Icon = "refresh-cw",
-                })
-            end
-        end,
-    })
-end
-
--- ============================================================================
--- BACKGROUND EXECUTION LOOPS
+-- BACKGROUND PROCESSING THREADS
 -- ============================================================================
 
 -- Thread 1: Infinite Automated Grid Engine
@@ -823,13 +686,11 @@ task.spawn(function()
             if character and character:FindFirstChild("HumanoidRootPart") then
                 local slot = _G.WeaponSlot
                 local targets = {}
-                
                 for _, monster in pairs(workspace.Monsters:GetChildren()) do
                     if monster:FindFirstChild("HumanoidRootPart") then
                         table.insert(targets, monster)
                     end
                 end
-                
                 if #targets > 0 then
                     ZAP.meleeAttack.fire({
                         monsters = targets,
@@ -852,7 +713,6 @@ task.spawn(function()
                 local root = character.HumanoidRootPart
                 local slot = _G.WeaponSlot 
                 local distance = _G.AuraDistance or 25
-                
                 for _, monster in pairs(workspace.Monsters:GetChildren()) do
                     if monster:FindFirstChild("HumanoidRootPart") then
                         local monsterDistance = (root.Position - monster.HumanoidRootPart.Position).Magnitude
@@ -877,12 +737,8 @@ task.spawn(function()
         task.wait(1)
         local character = Players.LocalPlayer.Character
         if character and character:FindFirstChild("Humanoid") then
-            if _G.WalkSpeed then
-                character.Humanoid.WalkSpeed = _G.WalkSpeed
-            end
-            if _G.JumpPower then
-                character.Humanoid.JumpPower = _G.JumpPower
-            end
+            if _G.WalkSpeed then character.Humanoid.WalkSpeed = _G.WalkSpeed end
+            if _G.JumpPower then character.Humanoid.JumpPower = _G.JumpPower end
         end
     end
 end)
@@ -899,51 +755,41 @@ task.spawn(function()
     end
 end)
 
--- New Thread: Automated Grinder Machine Network Controller
+-- Thread 5: Automated Grinder Machine Network Controller
 task.spawn(function()
     while true do
-        task.wait(0.1) -- Fast safe execution pacing
+        task.wait(0.1)
         if _G.StationGrindActive then
             pcall(function()
                 local deposit = workspace:FindFirstChild("Stations")
                     and workspace.Stations:FindFirstChild("Grinder")
                     and workspace.Stations.Grinder:FindFirstChild("ObjectDeposit")
-                
                 if deposit then
-                    local args = {
-                        buffer.fromstring("\027\001"),
-                        { deposit }
-                    }
-                    ZapReliable:FireServer(unpack(args))
+                    ZapReliable:FireServer(buffer.fromstring("\027\001"), { deposit })
                 end
             end)
         end
     end
 end)
 
--- New Thread: Automated Blueprints Table Network Controller
+-- Thread 6: Automated Blueprints Table Network Controller
 task.spawn(function()
     while true do
-        task.wait(0.1) -- Fast safe execution pacing
+        task.wait(0.1)
         if _G.StationBlueprintActive then
             pcall(function()
                 local deposit = workspace:FindFirstChild("Stations")
                     and workspace.Stations:FindFirstChild("BlueprintsTable")
                     and workspace.Stations.BlueprintsTable:FindFirstChild("ObjectDeposit")
-                
                 if deposit then
-                    local args = {
-                        buffer.fromstring("\027\001"),
-                        { deposit }
-                    }
-                    ZapReliable:FireServer(unpack(args))
+                    ZapReliable:FireServer(buffer.fromstring("\027\001"), { deposit })
                 end
             end)
         end
     end
 end)
 
--- Thread 5: Fly GUI V3 Control Vector Processing Loop
+-- Thread 7: Fly GUI V3 Control Vector Processing Loop
 task.spawn(function()
     local ctrl = {f = 0, b = 0, l = 0, r = 0}
     local lastctrl = {f = 0, b = 0, l = 0, r = 0}
@@ -975,7 +821,6 @@ task.spawn(function()
         
         if _G.FlyV3Active and character and character:FindFirstChildOfClass("Humanoid") and character.Humanoid.Health > 0 then
             local targetTorso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso") or character:FindFirstChild("HumanoidRootPart")
-            
             if targetTorso then
                 local bg = targetTorso:FindFirstChild("FlyV3Gyro") or Instance.new("BodyGyro")
                 if bg.Name ~= "FlyV3Gyro" then
@@ -1032,6 +877,5 @@ task.spawn(function()
     end
 end)
 
--- Interface Deployment
 Window:SelectTab(PatchTab)
-print(".ftgs hub | WindUI Interface Loaded successfully!")
+print("Bake or Die Hub | Fully Fixed Interface Processed Successfully!")
