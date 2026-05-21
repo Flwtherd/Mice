@@ -1,9 +1,34 @@
-local RunService = game:GetService("RunService")
-
 --[[
+          _____                    _____                    _____                    _____                  
+         /\    \                  /\    \                  /\    \                  /\    \                 
+        /::\____\                /::\    \                /::\    \                /::\    \                
+       /::::|   |                \:::\    \              /::::\    \              /::::\    \               
+      /:::::|   |                 \:::\    \            /::::::\    \            /::::::\    \              
+     /::::::|   |                  \:::\    \          /:::/\:::\    \          /:::/\:::\    \             
+    /:::/|::|   |                   \:::\    \        /:::/  \:::\    \        /:::/__\:::\    \            
+   /:::/ |::|   |                   /::::\    \      /:::/    \:::\    \      /::::\   \:::\    \           
+  /:::/  |::|___|______    ____    /::::::\    \    /:::/    / \:::\    \    /::::::\   \:::\    \          
+ /:::/   |::::::::\    \  /\   \  /:::/\:::\    \  /:::/    /   \:::\    \  /:::/\:::\   \:::\    \         
+/:::/    |:::::::::\____\/::\   \/:::/  \:::\____\/:::/____/     \:::\____\/:::/__\:::\   \:::\____\        
+\::/    / ~~~~~/:::/    /\:::\  /:::/    \::/    /\:::\    \      \::/    /\:::\   \:::\   \::/    /        
+ \/____/      /:::/    /  \:::\/:::/    / \/____/  \:::\    \      \/____/  \:::\   \:::\   \/____/         
+             /:::/    /    \::::::/    /            \:::\    \               \:::\   \:::\    \             
+            /:::/    /      \::::/____/              \:::\    \               \:::\   \:::\____\            
+           /:::/    /        \:::\    \               \:::\    \               \:::\   \::/    /            
+          /:::/    /          \:::\    \               \:::\    \               \:::\   \/____/             
+         /:::/    /            \:::\    \               \:::\    \               \:::\    \                 
+        /:::/    /              \:::\____\               \:::\____\               \:::\____\                
+        \::/    /                \::/    /                \::/    /                \::/    /                
+         \/____/                  \/____/                  \/____/                  \/____/                 
+                                                                                                            
+          
+
     WindUI - Mice: Bake or Die Hub
     Migrated to latest WindUI architecture with FLY GUI V3 Integration
 ]]
+                                                                                                  
+                                                                                                            
+local RunService = game:GetService("RunService")
 
 -- Environment Safety Setup
 local cloneref = (cloneref or clonereference or function(instance)
@@ -33,7 +58,6 @@ end
 
 -- Load Game Remotes
 local ZAP = require(ReplicatedStorage.Client.ClientRemotes)
-local ZapReliable = ReplicatedStorage:WaitForChild("ZAP"):WaitForChild("ZAP_RELIABLE")
 
 -- ESP Setup Variables
 local ESPFolder = Instance.new("Folder")
@@ -52,10 +76,6 @@ local ESPConfig = {
 _G.FlyV3Active = false
 _G.FlyV3Speeds = 1
 local tpwalking = false
-
--- Automation Toggles
-_G.AutoGrindZombies = false
-_G.AutoGrindItems = false
 
 -- Send Native Integration Notification
 game:GetService("StarterGui"):SetCore("SendNotification", { 
@@ -97,7 +117,7 @@ end
 
 -- */ Window Initialization /* --
 local Window = WindUI:CreateWindow({
-    Title = "Mice  |  Bake or Die",
+    Title = "Mice  | Bake or Die",
     Subtitle = "Version 1.2",
     Folder = "BakeOrDieHub",
     Icon = "solar:folder-2-bold-duotone",
@@ -105,7 +125,7 @@ local Window = WindUI:CreateWindow({
     Size = UDim2.fromOffset(550, 420),
     HideSearchBar = false,
 
-OpenButton = {
+    OpenButton = {
         Title = "Open Bake or Die",
         CornerRadius = UDim.new(1, 0),
         StrokeThickness = 3,
@@ -128,7 +148,7 @@ OpenButton = {
 WindUI:Popup({
     Title = "Update info",
     Icon = "solar:info-square-bold",
-    Content = "Version 1.2 Whats New? | Item Deposit & Zombie Grinding Operational.",
+    Content = "Version 1.0 Whats New? | Welcome to new Mice Script.",
     Buttons = {
         {
             Title = "Close",
@@ -170,38 +190,6 @@ PatchTab:Button({
 })
 
 -- ============================================================================
--- MAIN: AUTO GRIND TAB
--- ============================================================================
-local AutoGrindTab = MainSection:Tab({
-    Title = "Auto Grind",
-    Icon = "solar:star-fall-minimalistic-bold",
-    IconColor = Color3.fromHex("#FF007F"),
-    Border = true,
-})
-
-AutoGrindTab:Toggle({
-    Flag = "AutoGrindZombiesToggle",
-    Title = "Auto Grind Zombies",
-    Desc = "Loops attack functions endlessly to clear out all zombies on the map.",
-    Value = false,
-    Callback = function(Value)
-        _G.AutoGrindZombies = Value
-    end
-})
-
-AutoGrindTab:Space()
-
-AutoGrindTab:Toggle({
-    Flag = "AutoGrindItemsToggle",
-    Title = "Auto Deposit Items",
-    Desc = "Endlessly delivers items to both Blueprints Table & Grinder stations.",
-    Value = false,
-    Callback = function(Value)
-        _G.AutoGrindItems = Value
-    end
-})
-
--- ============================================================================
 -- COMBAT TAB
 -- ============================================================================
 local CombatTab = MainSection:Tab({
@@ -236,6 +224,76 @@ CombatTab:Slider({
     },
     Callback = function(Value)
         _G.AuraDistance = Value
+    end
+})
+
+CombatTab:Space()
+
+CombatTab:Toggle({
+    Flag = "AutoGrindToggle",
+    Title = "Auto Grind Monsters",
+    Desc = "Continuously and automatically wipes out every zombie on the map.",
+    Value = false,
+    Callback = function(Value)
+        _G.AutoGrindEnabled = Value
+    end
+})
+
+CombatTab:Space()
+
+-- SMART AUTO IDENTIFIER INTERFACE LOOPS
+_G.SmartGrinderEnabled = false
+CombatTab:Toggle({
+    Flag = "SmartGrinderToggle",
+    Title = "Smart Item/Zombie Identifier",
+    Desc = "Identifies carried entities automatically and fires them to Blueprints Table or Grinder.",
+    Value = false,
+    Callback = function(Value)
+        _G.SmartGrinderEnabled = Value
+        if Value then
+            task.spawn(function()
+                while _G.SmartGrinderEnabled do
+                    local char = Players.LocalPlayer.Character
+                    if char then
+                        -- Check for objects directly welded, equipped, or held in the character model
+                        for _, child in pairs(char:GetChildren()) do
+                            if child:IsA("Model") or child:IsA("Tool") then
+                                -- Identification Criteria: Bodies have HumanoidRootParts or specific parts [cite: 14]
+                                local isZombieOrBody = child:FindFirstChild("HumanoidRootPart") or child:FindFirstChild("Head") or child.Name:lower():find("zombie") or child.Name:lower():find("body") [cite: 14]
+                                -- Items lack player price tags and are standard structural instances 
+                                local isItemOrBlueprint = not child:FindFirstChild("ProductPriceTag") and not isZombieOrBody [cite: 14, 15]
+
+                                local stations = workspace:FindFirstChild("Stations")
+                                
+                                if isZombieOrBody and stations then
+                                    local grinder = stations:FindFirstChild("Grinder")
+                                    local deposit = grinder and grinder:FindFirstChild("ObjectDeposit")
+                                    if deposit then
+                                        local args = {
+                                            buffer.fromstring("\027\001"),
+                                            { deposit }
+                                        }
+                                        game:GetService("ReplicatedStorage"):WaitForChild("ZAP"):WaitForChild("ZAP_RELIABLE"):FireServer(unpack(args))
+                                    end
+                                    
+                                elseif isItemOrBlueprint and stations then
+                                    local blueprintTable = stations:FindFirstChild("BlueprintsTable")
+                                    local deposit = blueprintTable and blueprintTable:FindFirstChild("ObjectDeposit")
+                                    if deposit then
+                                        local args = {
+                                            buffer.fromstring("\027\001"),
+                                            { deposit }
+                                        }
+                                        game:GetService("ReplicatedStorage"):WaitForChild("ZAP"):WaitForChild("ZAP_RELIABLE"):FireServer(unpack(args))
+                                    end
+                                end
+                            end
+                        end
+                    end
+                    task.wait(0.3) -- Loop interval cooldown
+                end
+            end)
+        end
     end
 })
 
@@ -339,6 +397,60 @@ TeleportTab:Button({
     end
 })
 
+TeleportTab:Space()
+
+TeleportTab:Button({
+    Title = "Furniture Store",
+    Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
+    Callback = function()
+        local character = Players.LocalPlayer.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            character.HumanoidRootPart.CFrame = CFrame.new(furniturePos)
+            WindUI:Notify({
+                Title = "Teleport Executed",
+                Desc = "Successfully Teleported To Furniture Store!",
+                Icon = "check",
+            })
+        end
+    end
+})
+
+TeleportTab:Space()
+
+TeleportTab:Button({
+    Title = "Evergreen",
+    Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
+    Callback = function()
+        local character = Players.LocalPlayer.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            character.HumanoidRootPart.CFrame = CFrame.new(evergreenPos)
+            WindUI:Notify({
+                Title = "Teleport Executed",
+                Desc = "Successfully Teleported To Evergreen!",
+                Icon = "check",
+            })
+        end
+    end
+})
+
+TeleportTab:Space()
+
+TeleportTab:Button({
+    Title = "Farm",
+    Desc = "Instantly maps and teleports you to the specified X, Y, Z workspace vectors.",
+    Callback = function()
+        local character = Players.LocalPlayer.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            character.HumanoidRootPart.CFrame = CFrame.new(farmPos)
+            WindUI:Notify({
+                Title = "Teleport Executed",
+                Desc = "Successfully Teleported To Farm!",
+                Icon = "check",
+            })
+        end
+    end
+})
+
 -- ============================================================================
 -- PLAYER TAB (WITH INTEGRATED FLY GUI V3 FUNCTIONS)
 -- ============================================================================
@@ -408,6 +520,30 @@ PlayerTab:Slider({
 
 PlayerTab:Space()
 
+PlayerTab:Button({
+    Title = "Ascend Character (UP)",
+    Desc = "Shifts your character coordinates upward natively.",
+    Callback = function()
+        local character = Players.LocalPlayer.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            character.HumanoidRootPart.CFrame = character.HumanoidRootPart.CFrame * CFrame.new(0, 5, 0)
+        end
+    end
+})
+
+PlayerTab:Button({
+    Title = "Descend Character (DOWN)",
+    Desc = "Shifts your character coordinates downward natively.",
+    Callback = function()
+        local character = Players.LocalPlayer.Character
+        if character and character:FindFirstChild("HumanoidRootPart") then
+            character.HumanoidRootPart.CFrame = character.HumanoidRootPart.CFrame * CFrame.new(0, -5, 0)
+        end
+    end
+})
+
+PlayerTab:Space()
+
 PlayerTab:Slider({
     Flag = "WalkspeedSlider",
     Title = "WalkSpeed",
@@ -424,6 +560,28 @@ PlayerTab:Slider({
         local character = Players.LocalPlayer.Character
         if character and character:FindFirstChild("Humanoid") then
             character.Humanoid.WalkSpeed = Value
+        end
+    end
+})
+
+PlayerTab:Space()
+
+PlayerTab:Slider({
+    Flag = "JumpPowerSlider",
+    Title = "JumpPower",
+    Desc = "Modify your maximum jump height.",
+    IsTooltip = true,
+    Step = 1,
+    Value = {
+        Min = 50,
+        Max = 200,
+        Default = 50,
+    },
+    Callback = function(Value)
+        _G.JumpPower = Value
+        local character = Players.LocalPlayer.Character
+        if character and character:FindFirstChild("Humanoid") then
+            character.Humanoid.JumpPower = Value
         end
     end
 })
@@ -464,8 +622,61 @@ ESPTab:Toggle({
     end
 })
 
+ESPTab:Space()
+
+ESPTab:Toggle({
+    Flag = "ItemESPToggle",
+    Title = "Item ESP",
+    Desc = "Highlights interactable bodies and items.",
+    Value = false,
+    Callback = function(Value)
+        ESPConfig.ItemESP = Value
+        UpdateESP()
+    end
+})
+
+ESPTab:Space()
+
+ESPTab:Toggle({
+    Flag = "ESPNamesToggle",
+    Title = "Show Names",
+    Desc = "Displays object or entity names.",
+    Value = true,
+    Callback = function(Value)
+        ESPConfig.ShowNames = Value
+        UpdateESP()
+    end
+})
+
+ESPTab:Space()
+
+ESPTab:Toggle({
+    Flag = "ESPDistanceToggle",
+    Title = "Show Distance",
+    Desc = "Displays distance measurements in studs.",
+    Value = true,
+    Callback = function(Value)
+        ESPConfig.ShowDistance = Value
+        UpdateESP()
+    end
+})
+
+ESPTab:Space()
+
+ESPTab:Toggle({
+    Flag = "ESPHighlightToggle",
+    Title = "Show Highlight",
+    Desc = "Renders an outline/fill mesh highlight through walls.",
+    Value = true,
+    Callback = function(Value)
+        ESPConfig.ShowHighlight = Value
+        UpdateESP()
+    end
+})
+
 function CreateESP(part, color, name, distance)
     local espGroup = {}
+    
     if ESPConfig.ShowNames or ESPConfig.ShowDistance then
         local billboard = Instance.new("BillboardGui")
         billboard.Name = name .. "_Billboard"
@@ -494,6 +705,7 @@ function CreateESP(part, color, name, distance)
         textLabel.TextStrokeTransparency = 0
         textLabel.TextStrokeColor3 = Color3.new(0, 0, 0)
         textLabel.Parent = billboard
+        
         table.insert(espGroup, billboard)
     end
     
@@ -509,6 +721,7 @@ function CreateESP(part, color, name, distance)
         highlight.Parent = ESPFolder
         table.insert(espGroup, highlight)
     end
+    
     return espGroup
 end
 
@@ -520,6 +733,7 @@ end
 
 UpdateESP = function()
     ClearESP()
+    
     local character = Players.LocalPlayer.Character
     if not character or not character:FindFirstChild("HumanoidRootPart") then return end
     local playerRoot = character.HumanoidRootPart
@@ -535,239 +749,32 @@ UpdateESP = function()
             end
         end
     end
-end
-
--- ============================================================================
--- CONFIGURATION MANAGER PANEL
--- ============================================================================
-if not RunService:IsStudio() and writefile and printidentity() then
-    local ConfigTab = MainSection:Tab({ 
-        Title = "Config Center",
-        Icon = "solar:folder-with-files-bold",
-        IconColor = Color3.fromHex("#7775F2"),
-        Border = true,
-    })
-
-    local ConfigManager = Window.ConfigManager
-    local ConfigName = "default"
-
-    local ConfigNameInput = ConfigTab:Input({
-        Title = "Config Profiler",
-        Icon = "file-cog",
-        Callback = function(value)
-            ConfigName = value
-        end
-    })
-end
-
--- ============================================================================
--- BACKGROUND EXECUTION LOOPS
--- ============================================================================
-
--- Unified Item Deposit Process Loop
-task.spawn(function()
-    while true do
-        task.wait(0.4) -- Rate-limited slightly to safeguard from server packet kicks
-        if _G.AutoGrindItems then
-            pcall(function()
-                local stations = workspace:FindFirstChild("Stations")
-                if stations then
-                    -- 1. Fire Blueprints Table Deposit
-                    local blueprintsTable = stations:FindFirstChild("BlueprintsTable")
-                    local blueprintDeposit = blueprintsTable and blueprintsTable:FindFirstChild("ObjectDeposit")
-                    if blueprintDeposit then
-                        local blueprintArgs = {
-                            buffer.fromstring("\027\001"),
-                            { blueprintDeposit }
-                        }
-                        ZapReliable:FireServer(unpack(blueprintArgs))
-                    end
-                    
-                    -- 2. Fire Grinder Deposit
-                    local grinderStation = stations:FindFirstChild("Grinder")
-                    local grinderDeposit = grinderStation and grinderStation:FindFirstChild("ObjectDeposit")
-                    if grinderDeposit then
-                        local grinderArgs = {
-                            buffer.fromstring("\027\001"),
-                            { grinderDeposit }
-                        }
-                        ZapReliable:FireServer(unpack(grinderArgs))
-                    end
-                end
-            end)
-        end
-    end
-end)
-
--- Auto Grind Zombies Loop
-task.spawn(function()
-    while true do
-        task.wait(0.2)
-        if _G.AutoGrindZombies then
-            local character = Players.LocalPlayer.Character
-            if character and character:FindFirstChild("HumanoidRootPart") then
-                local slot = _G.WeaponSlot or 2
-                local targets = {}
-                
-                for _, monster in pairs(workspace.Monsters:GetChildren()) do
-                    if monster:FindFirstChild("HumanoidRootPart") then
-                        table.insert(targets, monster)
-                    end
-                end
-                
-                if #targets > 0 then
-                    ZAP.meleeAttack.fire({
-                        monsters = targets,
-                        civilians = {},
-                        activeSlot = slot
-                    })
-                end
-            end
-        end
-    end
-end)
-
--- Kill Aura Proximity Sweeper
-task.spawn(function()
-    while true do
-        task.wait(0.05)
-        if _G.KillAuraEnabled and not _G.AutoGrindZombies then
-            local character = Players.LocalPlayer.Character
-            if character and character:FindFirstChild("HumanoidRootPart") then
-                local root = character.HumanoidRootPart
-                local slot = _G.WeaponSlot or 2
-                local distance = _G.AuraDistance or 25
-                
-                for _, monster in pairs(workspace.Monsters:GetChildren()) do
-                    if monster:FindFirstChild("HumanoidRootPart") then
-                        local monsterDistance = (root.Position - monster.HumanoidRootPart.Position).Magnitude
-                        if monsterDistance < distance then
-                            ZAP.meleeAttack.fire({
-                                monsters = {monster},
-                                civilians = {},
-                                activeSlot = slot
-                            })
-                            break
-                        end
-                    end
-                end
-            end
-        end
-    end
-end)
-
--- Stat State Forcer
-task.spawn(function()
-    while true do
-        task.wait(1)
-        local character = Players.LocalPlayer.Character
-        if character and character:FindFirstChild("Humanoid") then
-            if _G.WalkSpeed then character.Humanoid.WalkSpeed = _G.WalkSpeed end
-        end
-    end
-end)
-
--- Visual Refresh Controller
-task.spawn(function()
-    while true do
-        task.wait(0.5)
-        if ESPConfig.MonsterESP then
-            UpdateESP()
-        else
-            ClearESP()
-        end
-    end
-end)
-
--- Fly GUI V3 Control Vector Processing Loop
-task.spawn(function()
-    local ctrl = {f = 0, b = 0, l = 0, r = 0}
-    local lastctrl = {f = 0, b = 0, l = 0, r = 0}
-    local maxspeed = 50
-    local speed = 0
-    local mouse = Players.LocalPlayer:GetMouse()
-
-    mouse.KeyDown:Connect(function(key)
-        local k = key:lower()
-        if k == "w" then ctrl.f = 1
-        elseif k == "s" then ctrl.b = -1
-        elseif k == "a" then ctrl.l = -1
-        elseif k == "d" then ctrl.r = 1
-        end
-    end)
     
-    mouse.KeyUp:Connect(function(key)
-        local k = key:lower()
-        if k == "w" then ctrl.f = 0
-        elseif k == "s" then ctrl.b = 0
-        elseif k == "a" then ctrl.l = 0
-        elseif k == "d" then ctrl.r = 0
+    if ESPConfig.ItemESP then
+        for _, item in pairs(workspace.Interactables:GetChildren()) do
+            if item:IsA("Model") then
+                local isBody = item:FindFirstChild("HumanoidRootPart")
+                local isItem = not item:FindFirstChild("ProductPriceTag")
+                
+                if isBody or isItem then
+                    local targetPart = item:FindFirstChild("HumanoidRootPart") or item.PrimaryPart
+                    if targetPart then
+                        local distance = (playerRoot.Position - targetPart.Position).Magnitude
+                        local espName = isBody and "Body: " .. item.Name or "Item: " .. item.Name
+                        local espColor = isBody and Color3.fromRGB(255, 165, 0) or Color3.fromRGB(50, 255, 50)
+                        CreateESP(targetPart, espColor, espName, distance)
+                    end
+                end
+            end
         end
-    end)
+    end
+end
 
-    while true do
-        game:GetService("RunService").RenderStepped:Wait()
-        local character = Players.LocalPlayer.Character
-        
-        if _G.FlyV3Active and character and character:FindFirstChildOfClass("Humanoid") and character.Humanoid.Health > 0 then
-            local targetTorso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso") or character:FindFirstChild("HumanoidRootPart")
-            
-            if targetTorso then
-                local bg = targetTorso:FindFirstChild("FlyV3Gyro") or Instance.new("BodyGyro")
-                if bg.Name ~= "FlyV3Gyro" then
-                    bg.Name = "FlyV3Gyro"
-                    bg.P = 9e4
-                    bg.maxTorque = Vector3.new(9e9, 9e9, 9e9)
-                    bg.CFrame = targetTorso.CFrame
-                    bg.Parent = targetTorso
-                end
-
-                local bv = targetTorso:FindFirstChild("FlyV3Velocity") or Instance.new("BodyVelocity")
-                if bv.Name ~= "FlyV3Velocity" then
-                    bv.Name = "FlyV3Velocity"
-                    bv.velocity = Vector3.new(0, 0.1, 0)
-                    bv.maxForce = Vector3.new(9e9, 9e9, 9e9)
-                    bv.Parent = targetTorso
-                end
-
-                character.Humanoid.PlatformStand = true
-
-                if ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0 then
-                    speed = speed + 0.5 + (speed / maxspeed)
-                    if speed > maxspeed then speed = maxspeed end
-                elseif not (ctrl.l + ctrl.r ~= 0 or ctrl.f + ctrl.b ~= 0) and speed ~= 0 then
-                    speed = speed - 1
-                    if speed < 0 then speed = 0 end
-                end
-
-                if (ctrl.l + ctrl.r) ~= 0 or (ctrl.f + ctrl.b) ~= 0 then
-                    bv.velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (ctrl.f + ctrl.b)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(ctrl.l + ctrl.r, (ctrl.f + ctrl.b) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * speed
-                    lastctrl = {f = ctrl.f, b = ctrl.b, l = ctrl.l, r = ctrl.r}
-                elseif (ctrl.l + ctrl.r) == 0 and (ctrl.f + ctrl.b) == 0 and speed ~= 0 then
-                    bv.velocity = ((workspace.CurrentCamera.CoordinateFrame.lookVector * (lastctrl.f + lastctrl.b)) + ((workspace.CurrentCamera.CoordinateFrame * CFrame.new(lastctrl.l + lastctrl.r, (lastctrl.f + lastctrl.b) * 0.2, 0).p) - workspace.CurrentCamera.CoordinateFrame.p)) * speed
-                else
-                    bv.velocity = Vector3.new(0, 0, 0)
-                end
-
-                bg.CFrame = workspace.CurrentCamera.CoordinateFrame * CFrame.Angles(-math.rad((ctrl.f + ctrl.b) * 50 * speed / maxspeed), 0, 0)
-            end
-        else
-            if character then
-                local targetTorso = character:FindFirstChild("UpperTorso") or character:FindFirstChild("Torso") or character:FindFirstChild("HumanoidRootPart")
-                if targetTorso then
-                    local bg = targetTorso:FindFirstChild("FlyV3Gyro")
-                    local bv = targetTorso:FindFirstChild("FlyV3Velocity")
-                    if bg then bg:Destroy() end
-                    if bv then bv:Destroy() end
-                end
-            end
-            ctrl = {f = 0, b = 0, l = 0, r = 0}
-            lastctrl = {f = 0, b = 0, l = 0, r = 0}
-            speed = 0
+-- Infinite loop handler for rendering distance calculations dynamically
+task.spawn(function()
+    while task.wait(1) do
+        if ESPConfig.MonsterESP or ESPConfig.ItemESP then
+            UpdateESP()
         end
     end
 end)
-
--- Interface Deployment
-Window:SelectTab(PatchTab)
-print(".ftgs hub | WindUI Interface Loaded successfully with Fly V3 Backend Extension!")
